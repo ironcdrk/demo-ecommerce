@@ -1,0 +1,21 @@
+################################################################################
+# LARAVEL (backend/)
+################################################################################
+
+backend/vendor/
+backend/node_modules/
+
+# Laravel environment files
+backend/.env
+backend/.env.*
+backend/.env.backup
+
+# Laravel runtime directories
+backend/storage/
+backend/bootstrap/cache/
+
+# Laravel specific logs
+backend/storage/logs/*.log
+
+# Laravel public storage (symlink contents)
+backend/storage/app/public/*

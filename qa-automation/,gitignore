@@ -1,0 +1,16 @@
+################################################################################
+# QA — Serenity / Maven (qa-automation/)
+################################################################################
+
+qa-automation/target/
+qa-automation/.classpath
+qa-automation/.project
+qa-automation/.settings/
+
+# Serenity generated output
+qa-automation/serenity/
+qa-automation/serenity-summary.html
+qa-automation/target/site/
+
+# WebDrivers downloaded locally
+qa-automation/webdriver/

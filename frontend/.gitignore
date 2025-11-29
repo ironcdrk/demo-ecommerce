@@ -1,0 +1,12 @@
+################################################################################
+# REACT + VITE (frontend/)
+################################################################################
+
+frontend/node_modules/
+frontend/dist/
+
+# Vite env files
+frontend/.env
+frontend/.env.*
+frontend/.env.local
+frontend/.env.production
