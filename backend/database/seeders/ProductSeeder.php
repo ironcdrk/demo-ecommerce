@@ -25,8 +25,17 @@ class ProductSeeder extends Seeder
                 'slug'        => 'samsung-galaxy-s10',
                 'description' => 'Powerful smartphone with AMOLED display.',
                 'price'       => 500,
-                'image_url'   => '/images/samsung-s10.jpg',
+                'image_url'   => '/storage/images/products/samsung-s10.jpg',
                 'stock'       => 10,
+            ],
+            [
+                'category_id' => $phones?->id,
+                'name'        => 'Nokia lumia 1520',
+                'slug'        => 'mokia-lumia-1520',
+                'description' => 'The Nokia Lumia 1520 is powered by 2.2GHz quad-core Qualcomm Snapdragon 800.',
+                'price'       => 800,
+                'image_url'   => '/storage/images/products/nokia-lumia-1520.jpg',
+                'stock'       => 8,
             ],
             [
                 'category_id' => $laptops?->id,
@@ -34,7 +43,7 @@ class ProductSeeder extends Seeder
                 'slug'        => 'macbook-pro-13',
                 'description' => 'Apple laptop for professionals.',
                 'price'       => 1200,
-                'image_url'   => '/images/macbook-pro-13.jpg',
+                'image_url'   => '/storage/images/products/macbook-pro-13.jpg',
                 'stock'       => 5,
             ],
             [
@@ -43,9 +52,10 @@ class ProductSeeder extends Seeder
                 'slug'        => 'asus-24-monitor',
                 'description' => 'Full HD monitor for work and gaming.',
                 'price'       => 200,
-                'image_url'   => '/images/asus-24-monitor.jpg',
+                'image_url'   => '/storage/images/products/asus-24-monitor.jpg',
                 'stock'       => 15,
             ],
+
         ];
 
         foreach ($products as $product) {
