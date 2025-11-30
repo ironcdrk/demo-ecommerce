@@ -50,6 +50,8 @@ services:
       - nginx-api
     environment:
       - VITE_API_URL=http://localhost:8080/api
+      - CHOKIDAR_USEPOLLING=true
+      - CHOKIDAR_INTERVAL=300
 
 
 
