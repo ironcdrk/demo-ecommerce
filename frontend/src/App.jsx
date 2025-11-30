@@ -5,22 +5,24 @@ import './App.css'
 import HomePage from "./pages/HomePage";
 import CategoriesPage from "./pages/CategoriesPage";
 import CategoryProductsPage from "./pages/CategoryProductsPage";
+import Main from "./components/layout/MainLayout";
 import { Routes, Route } from 'react-router-dom';
 
 
 function App() {
-  return (
-    <Routes>
-      {/* / -> HomePage */}
-      <Route path="/" element={<HomePage />} />
+ return (
+      <Routes>
+        {/* Ruta raíz con layout */}
+        <Route path="/" element={<Main />}>
+          {/* index = "/" */}
+          <Route index element={<HomePage />} />
 
-      {/* /category/:slug -> CategoriesPage */}
-      <Route path="/category/:slug" element={<CategoriesPage />} />
-      
-      {/* /categories/:categoryId/products -> CategoryProductsPage */}
-      <Route path="/categories/:categoryId/products" element={<CategoryProductsPage />} />
-    </Routes>
-  )
+          {/* otras páginas, mismo layout */}
+          <Route path="categories" element={<CategoriesPage />} />
+          <Route path="categories/:categoryId/products" element={<CategoryProductsPage />} />
+        </Route>
+      </Routes>
+  );
 }
 
 export default App

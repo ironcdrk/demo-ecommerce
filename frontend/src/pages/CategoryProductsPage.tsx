@@ -37,15 +37,15 @@ const CategoryProductsPage = () => {
         }
 
         const data = await response.json();
-        // si tu API envía { data: [...] } cambia a setProducts(data.data);
+        
         setProducts(
             data.map((p: any) => ({
                 ...p,
-                price: Number(p.price) // convertimos aquí
+                price: Number(p.price)
             }))
         );
       } catch (err: any) {
-        if (err.name === "AbortError") return; // efecto limpiado
+        if (err.name === "AbortError") return;
         setError(err.message || "Error desconocido");
       } finally {
         setLoading(false);
@@ -77,31 +77,45 @@ const CategoryProductsPage = () => {
 
   return (
     <div className="category-products-page">
-      <h1>Productos de la categoría {categoryId}</h1>
+    <h1>Productos de la categoría {categoryId}</h1>
 
-      <div className="product-grid">
+    <section className="product-grid">
+        <div className="product-grid__list">
         {products.map((product) => (
-          <article key={product.id} className="product-card">
-            {product.image_url && (
-              <img
+            <article key={product.id} className="product-card">
+            {product.image_url ? (
+                <img
                 src={`${API_BASE_URL}${product.image_url}`}
                 alt={product.name}
-                className="product-image"
-              />
+                className="product-card__image"
+                />
+            ) : (
+                <div className="product-card__image-placeholder">
+                Sin imagen
+                </div>
             )}
 
-            <h2 className="product-title">{product.name}</h2>
+            <div className="product-card__body">
+                <h2 className="product-card__title">{product.name}</h2>
 
-            {product.description && (
-              <p className="product-description">{product.description}</p>
-            )}
+                {product.description && (
+                <p className="product-card__description">
+                    {product.description}
+                </p>
+                )}
 
-            <p className="product-price">
-              ${Number(product.price).toFixed(2)}
-            </p>
-          </article>
+                <p className="product-card__price">
+                ${Number(product.price).toFixed(2)}
+                </p>
+
+                <button className="product-card__button">
+                Ver producto
+                </button>
+            </div>
+            </article>
         ))}
-      </div>
+        </div>
+    </section>
     </div>
   );
 };
