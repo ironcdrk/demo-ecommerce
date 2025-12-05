@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 interface CartItem {
   id: number;
@@ -14,7 +15,9 @@ export default function CartPage() {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
   const [items, setItems] = useState<CartItem[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loading, setLoading] = useState<boolean>(true);  
+  const navigate = useNavigate();
+
 
   // Cargar carrito desde localStorage
   useEffect(() => {
@@ -142,9 +145,13 @@ export default function CartPage() {
             </div>
           </div>
 
-          <button className="cart-summary__checkout-btn">
+          <button
+            className="cart-summary__checkout-btn"
+            onClick={() => navigate("/checkout")}
+          >
             PROCEED TO CHECKOUT
           </button>
+
         </aside>
       </div>
     </section>

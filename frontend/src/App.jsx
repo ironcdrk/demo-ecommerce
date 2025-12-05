@@ -1,6 +1,3 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import './App.css'
 import HomePage from "./pages/HomePage";
 import CategoriesPage from "./pages/CategoriesPage";
@@ -8,6 +5,7 @@ import CategoryProductsPage from "./pages/CategoryProductsPage";
 import Main from "./components/layout/MainLayout";
 import { Routes, Route } from 'react-router-dom';
 import CartPage from './pages/CartPage';
+import CheckoutPage from './pages/CheckoutPage';
 
 
 function App() {
@@ -19,6 +17,7 @@ function App() {
           <Route path="categories" element={<CategoriesPage />} />
           <Route path="categories/:categoryId/products" element={<CategoryProductsPage />} />
           <Route path="cart" element={<CartPage />} />
+          <Route path="/checkout" element={<CheckoutPage />} />
         </Route>
       </Routes>
   );
