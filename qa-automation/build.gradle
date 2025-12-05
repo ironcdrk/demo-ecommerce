@@ -1,0 +1,63 @@
+plugins {
+    id 'java'
+    id "net.serenity-bdd.serenity-gradle-plugin" version "4.1.14"
+}
+
+serenity {
+    reports = ["single-page-html"]
+}
+
+group = 'org.example'
+version = '1.0-SNAPSHOT'
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
+repositories {
+    maven {
+        url = "https://jitpack.io"
+    }
+    maven {
+        url = "https://plugins.gradle.org/m2/"
+    }
+}
+
+
+dependencies {
+    // JUnit Jupiter dependencies
+    testImplementation platform('org.junit:junit-bom:5.10.0') // BOM for managing versions
+    testImplementation 'org.junit.jupiter:junit-jupiter-api'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+
+    // Serenity dependencies
+    implementation 'net.serenity-bdd:serenity-core:4.2.0'
+    implementation 'net.serenity-bdd:serenity-junit:4.2.0'
+    implementation 'net.serenity-bdd:serenity-screenplay:4.2.0'
+    implementation 'net.serenity-bdd:serenity-screenplay-webdriver:4.2.0'
+    implementation 'net.serenity-bdd:serenity-cucumber:4.2.0'
+    implementation 'net.serenity-bdd:serenity-report-resources:4.2.0'
+    testImplementation 'net.serenity-bdd:serenity-spring:4.2.0'
+
+    // Other dependencies
+    implementation 'org.json:json:20240303'
+    implementation 'commons-httpclient:commons-httpclient:3.1'
+    implementation 'org.apache.poi:poi:5.3.0'
+    implementation 'org.apache.poi:poi-ooxml:5.3.0'
+    implementation 'org.apache.poi:openxml4j:1.0-beta'
+    testImplementation 'org.assertj:assertj-core:3.26.3'
+    testImplementation 'org.hamcrest:hamcrest:3.0'
+    testImplementation 'ch.qos.logback:logback-classic:1.5.8'
+}
+
+task generateTimestamp {
+    doLast {
+        def timestamp = new java.text.SimpleDateFormat("yyyy-MM-dd HH-mm-ss").format(new java.util.Date())
+        println "Timestamp actual: $timestamp"
+        ext.currentTime = timestamp
+    }
+}
+
+tasks.withType(JavaCompile) {
+    dependsOn generateTimestamp
+}
