@@ -7,19 +7,18 @@ import CategoriesPage from "./pages/CategoriesPage";
 import CategoryProductsPage from "./pages/CategoryProductsPage";
 import Main from "./components/layout/MainLayout";
 import { Routes, Route } from 'react-router-dom';
+import CartPage from './pages/CartPage';
 
 
 function App() {
  return (
       <Routes>
-        {/* Ruta raíz con layout */}
-        <Route path="/" element={<Main />}>
-          {/* index = "/" */}
+          {/* Ruta raíz con layout */}
+          <Route path="/" element={<Main />}>
           <Route index element={<HomePage />} />
-
-          {/* otras páginas, mismo layout */}
           <Route path="categories" element={<CategoriesPage />} />
           <Route path="categories/:categoryId/products" element={<CategoryProductsPage />} />
+          <Route path="cart" element={<CartPage />} />
         </Route>
       </Routes>
   );

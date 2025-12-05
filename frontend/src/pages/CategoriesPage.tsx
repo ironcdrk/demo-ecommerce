@@ -47,23 +47,6 @@ export default function CategoriesPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header simple */}
-      <header
-        style={{
-          padding: "1rem 2rem",
-          backgroundColor: "white",
-          borderBottom: "1px solid #e5e7eb",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-        }}
-      >
-        <h1 style={{ fontSize: "1.5rem", fontWeight: 600 }}>Mini Demoecommerce</h1>
-        <nav style={{ fontSize: "0.95rem" }}>
-          <span style={{ marginRight: "1rem", cursor: "pointer" }}>Inicio</span>
-          <span style={{ cursor: "pointer" }}>Carrito (0)</span>
-        </nav>
-      </header>
 
       {/* Contenido */}
       <main style={{ padding: "2rem" }}>

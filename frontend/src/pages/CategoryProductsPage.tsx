@@ -9,7 +9,7 @@ interface Product {
   image_url?: string;
 }
 
-const CategoryProductsPage = () => {
+export default function CategoryProductsPage() {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
   const { categoryId } = useParams<{ categoryId: string }>();
 
@@ -119,6 +119,4 @@ const CategoryProductsPage = () => {
     </div>
   );
 };
-
-export default CategoryProductsPage;
 

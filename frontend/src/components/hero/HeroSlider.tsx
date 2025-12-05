@@ -2,11 +2,11 @@ export default function HeroSlider() {
   return (
     <section className="hero">
       <div className="hero__content">
-        <h1 className="hero__title">Marcas Destacadas</h1>
+        <h1 className="hero__title">Producto destacado del mes</h1>
         <p className="hero__subtitle">
-          Aquí irá el texto de la categoria destacada.
+          Xiaomi Redmi Note 12 Pro
         </p>
-        <button className="hero__cta">Ver marcas</button>
+        <button className="hero__cta">Descubre mas</button>
       </div>
     </section>
   );
