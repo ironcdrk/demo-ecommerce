@@ -51,25 +51,43 @@ export default function CategoryBlocks() {
     );
   }
 
+  const categoryImages: Record<string, string> = {
+    phones: "/images/categories/phones.webp",
+    laptops: "/images/categories/laptops.webp",
+    monitors: "/images/categories/monitors.webp",
+  };
+
   return (
     <section className="category-blocks">
       <div className="category-blocks__grid">
-        {categories.map((cat) => (
-          <article key={cat.id} className="category-blocks__item">
-            <div className="category-blocks__overlay">
-              <h2 className="category-blocks__title">{cat.name}</h2>
-              <button
-                className="category-blocks__button"
-                onClick={() => {
-                  navigate(`/categories/${cat.id}/products`);
-                  console.log("Ver categoría", cat.slug);
-                }}
-              >
-                Ver más
-              </button>
-            </div>
-          </article>
-        ))}
+        {categories.map((cat) => {
+          const imageSrc =
+            categoryImages[cat.slug] ?? "/images/categories/default.jpg";
+
+          return (
+            <article key={cat.id} className="category-blocks__item">
+              <div className="category-blocks__image-wrapper">
+                <img
+                  src={imageSrc}
+                  alt={cat.name}
+                  className="category-blocks__image"
+                />
+              </div>
+              <div className="category-blocks__overlay">
+                <h2 className="category-blocks__title">{cat.name}</h2>
+                <button
+                  className="category-blocks__button"
+                  onClick={() => {
+                    navigate(`/categories/${cat.id}/products`);
+                    console.log("Ver categoría", cat.slug);
+                  }}
+                >
+                  Ver más
+                </button>
+              </div>
+            </article>
+          );
+        })}
       </div>
     </section>
   );
