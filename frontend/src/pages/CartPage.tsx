@@ -41,12 +41,14 @@ export default function CartPage() {
 
     setItems(updated);
     localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+    window.dispatchEvent(new Event("cart_updated"));
   };
 
   const removeFromCart = (productId: number) => {
     const updated = items.filter((item) => item.id !== productId);
     setItems(updated);
     localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+    window.dispatchEvent(new Event("cart_updated"));
   };
 
   const subtotal = items.reduce(
