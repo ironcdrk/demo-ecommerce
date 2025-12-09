@@ -7,7 +7,8 @@ Full-Stack Application · Monorepo · QA Automation
 ![React](https://img.shields.io/badge/React-Frontend-61DAFB?logo=react)
 ![Postgres](https://img.shields.io/badge/Postgres-Database-336791?logo=postgresql)
 ![Selenium](https://img.shields.io/badge/Selenium-E2E%20Tests-43B02A?logo=selenium)
-![Docker](https://img.shields.io/badge/Docker-Compose-Enabled-0db7ed?logo=docker)
+![Docker Compose](https://img.shields.io/badge/Docker%20Compose-Enabled-0db7ed?logo=docker)
+
 
 ---
 
