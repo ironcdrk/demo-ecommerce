@@ -2,7 +2,6 @@ package demoecommerce.stepdefinitions;
 
 import io.cucumber.datatable.DataTable;
 import io.cucumber.java.Before;
-import io.cucumber.java.Scenario;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.When;
@@ -18,16 +17,9 @@ import static net.serenitybdd.screenplay.actors.OnStage.theActorCalled;
 
 public class PurchaseStepDef {
 
-    private Scenario scenario;
-
     @Before
     public void setUp() {
         OnStage.setTheStage(new OnlineCast());
-    }
-
-    @Before(order = 1)
-    public void setScenario(Scenario scenario) {
-        this.scenario = scenario;
     }
 
     @Given("el usuario accede al sitio DemoEcommerce")

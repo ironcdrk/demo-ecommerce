@@ -1,4 +1,3 @@
-// src/pages/CheckoutPage.tsx
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
@@ -98,14 +97,14 @@ export default function CheckoutPage() {
         });
 
         if (!res.ok) {
-        // si Laravel devuelve 422, aquí puedes leer los errores
+            
         const data = await res.json().catch(() => null);
         console.log("Error API orders:", data);
         throw new Error("No se pudo completar el pedido.");
         }
 
         clearCart();
-        setShowModal(true); // aquí ya muestras la modal de éxito
+        setShowModal(true);
     } catch (err: any) {
         console.error(err);
         setError(err.message || "Ocurrió un error al procesar el pedido.");
@@ -122,7 +121,6 @@ export default function CheckoutPage() {
             <p>Tu carrito está vacío.</p>
         ) : (
             <div className="checkout__content">
-            {/* Resumen del carrito */}
             <section className="checkout__summary">
                 <h2>Resumen del pedido</h2>
                 <ul className="checkout__items">
@@ -146,78 +144,77 @@ export default function CheckoutPage() {
                 </div>
             </section>
 
-            {/* Formulario de datos */}
             <section className="checkout__form-wrapper">
                 <h2>Datos del comprador</h2>
 
                 <form className="checkout__form" onSubmit={handleSubmit}>
 
-                {/* NOMBRE */}
                 <label className="checkout__field">
                     <span>Nombre completo</span>
                     <input
                     type="text"
                     name="customer_name"
+                    id="customer_name"
                     value={form.customer_name}
                     onChange={handleChange}
                     required
                     />
                 </label>
 
-                {/* PAÍS */}
                 <label className="checkout__field">
                     <span>País</span>
                     <input
                     type="text"
                     name="country"
+                    id="country"
                     value={form.country}
                     onChange={handleChange}
                     required
                     />
                 </label>
 
-                {/* CIUDAD */}
                 <label className="checkout__field">
                     <span>Ciudad</span>
                     <input
                     type="text"
                     name="city"
+                    id="city"
                     value={form.city}
                     onChange={handleChange}
                     required
                     />
                 </label>
 
-                {/* NÚMERO DE TARJETA */}
                 <label className="checkout__field">
                     <span>Número de tarjeta</span>
                     <input
                     type="text"
                     name="card_number"
+                    id="card_number"
                     value={form.card_number}
                     onChange={handleChange}
                     required
                     />
                 </label>
 
-                {/* MES */}
                 <label className="checkout__field">
                     <span>Mes (MM)</span>
                     <input
                     type="text"
                     name="card_month"
+                    id="card_month"
                     value={form.card_month}
                     onChange={handleChange}
                     required
                     />
                 </label>
 
-                {/* AÑO */}
                 <label className="checkout__field">
                     <span>Año (YYYY)</span>
                     <input
                     type="text"
                     name="card_year"
+                    id="card_year"
                     value={form.card_year}
                     onChange={handleChange}
                     required
@@ -231,7 +228,7 @@ export default function CheckoutPage() {
                     className="checkout__submit"
                     disabled={loading}
                 >
-                    {loading ? "Procesando..." : "Confirmar pedido"}
+                    {loading ? "Procesando..." : "Purchase"}
                 </button>
                 </form>
             </section>
@@ -239,7 +236,6 @@ export default function CheckoutPage() {
         )}
         </div>
 
-        {/* MODAL DE CONFIRMACIÓN */}
         {showModal && (
         <div className="modal-overlay">
             <div className="modal-content">

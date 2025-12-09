@@ -10,8 +10,6 @@ import demoecommerce.pages.PurchaseOrderFormPage;
 
 import static net.serenitybdd.screenplay.matchers.WebElementStateMatchers.isVisible;
 
-import org.openqa.selenium.interactions.Pause;
-
 public class FillOrderFormTask implements Task {
 
     private final String name;

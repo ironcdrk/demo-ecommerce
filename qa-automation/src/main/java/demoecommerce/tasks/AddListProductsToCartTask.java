@@ -2,13 +2,9 @@ package demoecommerce.tasks;
 
 import net.serenitybdd.screenplay.Actor;
 import net.serenitybdd.screenplay.Task;
-import net.serenitybdd.screenplay.waits.WaitUntil;
 
 import java.util.List;
 import java.util.Map;
-
-import demoecommerce.pages.HomePage;
-
 
 public class AddListProductsToCartTask implements Task {
 
