@@ -121,11 +121,9 @@ Próximas implementaciones:
 
 ### Frontend
 - [ ] Vista detalle de producto
-- [ ] Persistir carrito localStorage
 - [ ] Checkout con token real
 
 ### QA
-- [ ] Reportes Serenity personalizados
 - [ ] API testing con Karate
 - [ ] Pipeline automatizado
 
