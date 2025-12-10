@@ -17,7 +17,7 @@ Feature: Flujo de compra en DemoEcommerce
       | <name>    | <country> | <city> | <card>   | <month>|<year> |
 
     And finaliza la compra
-    Then deberia ver el mensaje de confirmacion "Thank you for your purchase!"
+    Then deberia ver el mensaje de confirmacion "¡Gracias por tu compra!"
 
     Examples:
       | name         | country | city  | card         | month | year |

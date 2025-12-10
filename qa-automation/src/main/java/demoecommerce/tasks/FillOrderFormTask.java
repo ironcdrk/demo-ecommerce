@@ -50,9 +50,7 @@ public class FillOrderFormTask implements Task {
                 Enter.theValue(city).into(PurchaseOrderFormPage.CITY_FIELD),
                 Enter.theValue(card).into(PurchaseOrderFormPage.CARD_FIELD),
                 Enter.theValue(month).into(PurchaseOrderFormPage.MONTH_FIELD),
-                Enter.theValue(year).into(PurchaseOrderFormPage.YEAR_FIELD),
-
-                Click.on(PurchaseOrderFormPage.PURCHASE_BUTTON)
+                Enter.theValue(year).into(PurchaseOrderFormPage.YEAR_FIELD)
         );
     }
 }

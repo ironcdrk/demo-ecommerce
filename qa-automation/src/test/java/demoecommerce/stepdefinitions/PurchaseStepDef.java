@@ -60,4 +60,20 @@ public class PurchaseStepDef {
                 )
         );
     }
+
+    @And("finaliza la compra")
+    public void finalizaLaCompra() {
+        OnStage.theActorInTheSpotlight().attemptsTo(
+                FinishPurchaseTask.confirm()
+        );
+    }
+
+    @Then("deberia ver el mensaje de confirmacion {string}")
+    public void validaMensajeDeConfirmacion(String expectedMessage) {
+        OnStage.theActorInTheSpotlight().attemptsTo(
+                ValidateConfirmationMessageTask.withText(expectedMessage)
+        );
+    }
+
+
 }

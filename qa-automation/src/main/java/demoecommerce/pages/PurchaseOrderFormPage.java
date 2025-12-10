@@ -25,8 +25,4 @@ public class PurchaseOrderFormPage {
     public static final Target PURCHASE_BUTTON = Target.the("BOTON PURCHASE")
             .locatedBy("//button[contains(text(),'Purchase')]");
 
-    public static final Target PLACE_ORDER_BUTTON = Target.the("BOTON PLACE ORDER")
-            .locatedBy("//button[contains(text(),'Place Order')]");
-
-
 }
