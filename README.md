@@ -133,17 +133,16 @@ Próximas implementaciones:
 
 ---
 
-## 📸 Galería de capturas (pendiente)
+## 📸 Galería de capturas (en actualización)
 
-Ejemplo de futuras imágenes:
+### Pantalla principal
+<img src="docs/screens/home.png" width="700">
 
-```
-docs/screens/catalog.png
-docs/screens/cart.png
-docs/screens/checkout.png
-docs/screens/api-products.png
-docs/screens/automation.png
-```
+### Carrito de compras
+<img src="docs/screens/cart.png" width="700">
+
+### Reporte de pruebas automatizadas
+<img src="docs/screens/serenity-report.png" width="700">
 
 ---
 
