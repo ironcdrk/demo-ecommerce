@@ -20,7 +20,7 @@ RUN apt-get update && apt-get install -y \
        bcmath \
     && rm -rf /var/lib/apt/lists/*
 
-# Opcional: opcache (útil en prod)
+# Opcache
 RUN docker-php-ext-install opcache
 
 # Composer
@@ -29,23 +29,21 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 WORKDIR /var/www
 
 ########################
-# Etapa DEV
+# DEV
 ########################
 FROM base AS dev
 
-# Xdebug solo en desarrollo
+# Xdebug
 RUN pecl install xdebug && docker-php-ext-enable xdebug
 
 # Configs de PHP para dev
-# (Crea estos archivos en backend/docker/php)
 COPY docker/php/php.dev.ini /usr/local/etc/php/php.ini
 COPY docker/php/xdebug.ini   /usr/local/etc/php/conf.d/xdebug.ini
 
-# No copiamos el código aquí, porque lo montaremos como volumen
 CMD ["php-fpm"]
 
 ########################
-# Etapa PROD
+# PROD
 ########################
 FROM base AS prod
 
