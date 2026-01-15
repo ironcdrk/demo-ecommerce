@@ -11,6 +11,9 @@ use Illuminate\Support\Str;
 
 final class RegisterHandler
 {
+     public function __construct(
+        private readonly UserRepository $users,
+    ) {}
     /**
      * @return array{user: array, token: string, token_type: string}
      *
