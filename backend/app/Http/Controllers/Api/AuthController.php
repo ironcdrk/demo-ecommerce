@@ -8,6 +8,8 @@ use App\Models\User;
 use App\Utils\Support\ApiResponse;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
+use App\Application\Auth\Handlers\RegisterUserHandler;
+use App\Application\Auth\Commands\RegisterUserCommand;
 
 class AuthController extends Controller
 {
@@ -47,4 +49,34 @@ class AuthController extends Controller
             'token_type' => 'Bearer',
         ]);
     }
+
+    public function register(RegisterRequest $request, RegisterUserHandler $handler): JsonResponse
+    {
+        $v = $request->validated();
+
+        try {
+            $result = $handler->handle(new RegisterUserCommand(
+                name: $v['name'],
+                email: $v['email'],
+                password: $v['password'],
+                deviceName: $v['device_name'] ?? null,
+                ip: $request->ip(),
+            ));
+
+            return ApiResponse::success([
+                'user' => $result->user,
+                'token' => $result->token,
+                'token_type' => 'Bearer',
+            ], meta: [], status: 201);
+
+        } catch (RegistrationNotProcessableException $e) {
+            return ApiResponse::error([
+                [
+                    'code' => 'VALIDATION_ERROR',
+                    'message' => 'No se pudo procesar el registro con los datos proporcionados.',
+                ]
+            ], 422);
+        }
+    }
+
 }
