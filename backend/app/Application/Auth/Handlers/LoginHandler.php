@@ -2,43 +2,50 @@
 
 namespace App\Application\Auth\Handlers;
 
-use App\Application\Auth\DTO\LoginData;
-use App\Models\User;
-use Illuminate\Support\Facades\Hash;
+use App\Application\Auth\Commands\LoginCommand;
+use App\Domain\Auth\Repositories\AccessTokenRepository;
+use App\Domain\Auth\Repositories\UserRepository;
+use App\Domain\Auth\Services\CredentialsVerifier;
 use Illuminate\Support\Facades\Log;
 
 final class LoginHandler
 {
+    public function __construct(
+        private readonly UserRepository $users,
+        private readonly AccessTokenRepository $tokens,
+        private readonly CredentialsVerifier $verifier,
+    ) {}
+
     /**
      * @return array{user: array, token: string, token_type: string}
-     *
-     * @throws \DomainException
      */
-    public function handle(LoginData $data): array
+    public function handle(LoginCommand $cmd): array
     {
-        $user = User::query()
-            ->where('email', $data->email)
-            ->first();
+        $user = $this->users->findByEmail($cmd->email);
 
-        if (!$user || !Hash::check($data->password, $user->password)) {
-            // No exponemos detalles; el controller lo mapea a 401 con ApiResponse.
+        if (!$user || !$this->verifier->verify($user, $cmd->password)) {
             throw new \DomainException('INVALID_CREDENTIALS');
         }
 
-        $tokenName = $data->deviceName ?? 'web';
-        $token = $user->createToken($tokenName)->plainTextToken;
+        $userId = $user->id();
+        if (!$userId) {
+            throw new \DomainException('USER_NOT_PERSISTED');
+        }
+
+        $tokenName = $cmd->deviceName ?? 'web';
+        $token = $this->tokens->createForUser($userId, $tokenName);
 
         Log::info('auth.login', [
-            'user_id' => $user->id,
-            'ip' => $data->ip,
+            'user_id' => $userId,
+            'ip' => $cmd->ip,
         ]);
 
         return [
             'user' => [
-                'id' => $user->id,
-                'name' => $user->name,
-                'email' => $user->email,
-                'role' => $user->role,
+                'id' => $userId,
+                'name' => $user->name(),
+                'email' => $user->email(),
+                'role' => $user->role()->value,
             ],
             'token' => $token,
             'token_type' => 'Bearer',

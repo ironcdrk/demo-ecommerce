@@ -19,7 +19,7 @@ final class User
     public static function registerNew(string $name, string $email, string $passwordHash, Role $role): self
     {
         $name = trim($name);
-        if ($name === '' || strlen($name) > 120) {
+        if ($name === '' || (strlen($name) < 5 || strlen($name) > 120)) {
             throw new \InvalidArgumentException('Invalid name.');
         }
 
@@ -32,7 +32,7 @@ final class User
 
     public function id(): ?int { return $this->id; }
     public function name(): string { return $this->name; }
-    public function email(): Email { return $this->email; }
+    public function email(): string { return $this->email; }
     public function passwordHash(): string { return $this->passwordHash; }
     public function role(): Role { return $this->role; }
     public function createdAtIso(): ?string { return $this->createdAtIso; }

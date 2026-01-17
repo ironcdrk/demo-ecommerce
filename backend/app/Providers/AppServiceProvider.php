@@ -7,7 +7,12 @@ use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
 use App\Domain\Auth\Repositories\UserRepository;
-use App\Infrastructure\Persistence\EloquentUserRepository;
+use App\Domain\Auth\Repositories\AccessTokenRepository;
+use App\Domain\Auth\Services\CredentialsVerifier;
+
+use App\Infrastructure\Auth\Repositories\EloquentUserRepository;
+use App\Infrastructure\Auth\Repositories\EloquentAccessTokenRepository;
+use App\Infrastructure\Auth\Services\EloquentCredentialsVerifier;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -17,6 +22,8 @@ class AppServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->bind(UserRepository::class, EloquentUserRepository::class);
+        $this->app->bind(AccessTokenRepository::class, EloquentAccessTokenRepository::class);
+        $this->app->bind(CredentialsVerifier::class, EloquentCredentialsVerifier::class);
     }
 
     /**

@@ -3,11 +3,16 @@
 namespace App\Domain\Auth\Repositories;
 
 use App\Domain\Auth\Entities\User;
-use App\Domain\Auth\ValueObjects\Email;
 
 interface UserRepository
 {
-    public function existsByEmail(Email $email): bool;
+    public function existsByEmail(string $email): bool;
+
+    public function findById(int $id): ?User;
+
+    public function findByEmail(string $email): ?User;
+
+    public function getById(int $id): User;
 
     /**
      * Persiste y retorna la entidad con ID asignado.
