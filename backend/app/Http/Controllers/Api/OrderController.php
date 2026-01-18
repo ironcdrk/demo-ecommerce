@@ -3,16 +3,16 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Application\Orders\Commands\CreateOrderCommand;
+use App\Application\Orders\Handlers\CreateOrderHandler;
+use App\Domain\Catalog\Exceptions\InsufficientStockException;
+use App\Domain\Catalog\Exceptions\ProductNotFoundException;
 use Illuminate\Http\Request;
-use App\Models\Order;
-use App\Models\OrderItem;
-use App\Models\Product;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
 class OrderController extends Controller
 {
-    public function store(Request $request)
+    public function store(Request $request, CreateOrderHandler $handler)
     {
         $data = $request->validate([
             'customer_name'  => 'required|string|max:255',
@@ -22,62 +22,37 @@ class OrderController extends Controller
             'card_month'     => 'required|string|max:2',
             'card_year'      => 'required|string|max:4',
             'items'          => 'required|array|min:1',
-            'items.*.product_id' => 'required|integer|exists:products,id',
+            'items.*.product_id' => 'required|integer',
             'items.*.quantity'   => 'required|integer|min:1',
         ]);
 
-        return DB::transaction(function () use ($data) {
-            $total = 0;
-            $itemsData = [];
+        $command = new CreateOrderCommand(
+            userId: (int) $request->user()->id,
+            customerName: $data['customer_name'],
+            country: $data['country'],
+            city: $data['city'],
+            cardNumber: $data['card_number'],
+            cardMonth: $data['card_month'],
+            cardYear: $data['card_year'],
+            items: $data['items'],
+        );
 
-            foreach ($data['items'] as $item) {
-                $product = Product::find($item['product_id']);
-
-                if (!$product) {
-                    throw ValidationException::withMessages([
-                        'items' => ['Product not found: ' . $item['product_id']],
-                    ]);
-                }
-
-                if ($product->stock < $item['quantity']) {
-                    throw ValidationException::withMessages([
-                        'items' => ["Not enough stock for product {$product->name}"],
-                    ]);
-                }
-
-                $lineTotal = $product->price * $item['quantity'];
-                $total += $lineTotal;
-
-                $itemsData[] = [
-                    'product_id' => $product->id,
-                    'quantity'   => $item['quantity'],
-                    'price'      => $product->price,
-                ];
-
-                // Actualizar stock
-                $product->decrement('stock', $item['quantity']);
-            }
-
-            $order = Order::create([
-                'customer_name' => $data['customer_name'],
-                'country'       => $data['country'],
-                'city'          => $data['city'],
-                'card_number'   => $data['card_number'],
-                'card_month'    => $data['card_month'],
-                'card_year'     => $data['card_year'],
-                'total'         => $total,
+        try {
+            $result = $handler->handle($command);
+        } catch (ProductNotFoundException $e) {
+            throw ValidationException::withMessages([
+                'items' => ["Product not found: {$e->productId}"],
             ]);
+        } catch (InsufficientStockException $e) {
+            throw ValidationException::withMessages([
+                'items' => ["Not enough stock for product {$e->productName}"],
+            ]);
+        }
 
-            foreach ($itemsData as $itemData) {
-                $itemData['order_id'] = $order->id;
-                OrderItem::create($itemData);
-            }
-
-            return response()->json([
-                'message' => 'Order created successfully',
-                'order_id' => $order->id,
-                'total' => $order->total,
-            ], 201);
-        });
+        return response()->json([
+            'message' => 'Order created successfully',
+            'order_id' => $result['order_id'],
+            'total' => $result['total'],
+        ], 201);
     }
 }

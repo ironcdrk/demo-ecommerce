@@ -3,71 +3,65 @@
 namespace App\Application\Orders\Handlers;
 
 use App\Application\Orders\Commands\CreateOrderCommand;
-use App\Models\Order;
-use App\Models\OrderItem;
-use App\Models\Product;
+use App\Domain\Catalog\Exceptions\InsufficientStockException;
+use App\Domain\Catalog\Exceptions\ProductNotFoundException;
+use App\Domain\Catalog\Repositories\ProductRepository;
+use App\Domain\Orders\Repositories\OrderRepository;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Validation\ValidationException;
 
-class CreateOrderHandler
+final class CreateOrderHandler
 {
+    public function __construct(
+        private readonly ProductRepository $products,
+        private readonly OrderRepository $orders,
+    ) {}
+
     public function handle(CreateOrderCommand $command): array
     {
-        $data = $command->data;
+        return DB::transaction(function () use ($command) {
 
-        return DB::transaction(function () use ($data, $command) {
-            $total = 0;
-            $itemsData = [];
+            $total = 0.0;
+            $itemsForOrder = [];
 
-            foreach ($data['items'] as $item) {
-                $product = Product::whereKey($item['product_id'])
-                    ->lockForUpdate()
-                    ->first();
+            foreach ($command->items as $item) {
+                $product = $this->products->findForUpdate((int) $item['product_id']);
 
                 if (!$product) {
-                    throw ValidationException::withMessages([
-                        'items' => ['Product not found: ' . $item['product_id']],
-                    ]);
+                    throw new ProductNotFoundException((int) $item['product_id']);
                 }
 
-                if ($product->stock < $item['quantity']) {
-                    throw ValidationException::withMessages([
-                        'items' => ["Not enough stock for product {$product->name}"],
-                    ]);
+                $qty = (int) $item['quantity'];
+
+                if ($product['stock'] < $qty) {
+                    throw new InsufficientStockException($product['id'], $product['name']);
                 }
 
-                $lineTotal = $product->price * $item['quantity'];
+                $lineTotal = $product['price'] * $qty;
                 $total += $lineTotal;
 
-                $itemsData[] = [
-                    'product_id' => $product->id,
-                    'quantity'   => $item['quantity'],
-                    'price'      => $product->price,
+                $itemsForOrder[] = [
+                    'product_id' => $product['id'],
+                    'quantity' => $qty,
+                    'price' => $product['price'],
                 ];
 
-                $product->decrement('stock', $item['quantity']);
+                $this->products->decrementStock($product['id'], $qty);
             }
 
-            $order = Order::create([
-                'customer_name' => $data['customer_name'],
-                'country'       => $data['country'],
-                'city'          => $data['city'],
-                'card_number'   => $data['card_number'],
-                'card_month'    => $data['card_month'],
-                'card_year'     => $data['card_year'],
-                'total'         => $total,
-                'user_id' => $command->userId,
-            ]);
+            $orderData = [
+                'customer_name' => $command->customerName,
+                'country' => $command->country,
+                'city' => $command->city,
+                'card_number' => $command->cardNumber,
+                'card_month' => $command->cardMonth,
+                'card_year' => $command->cardYear,
+                'total' => $total,
 
-            foreach ($itemsData as $itemData) {
-                $itemData['order_id'] = $order->id;
-                OrderItem::create($itemData);
-            }
-
-            return [
-                'order_id' => $order->id,
-                'total' => $order->total,
+                // Si ya agregas user_id en orders:
+                // 'user_id' => $command->userId,
             ];
+
+            return $this->orders->createWithItems($orderData, $itemsForOrder);
         });
     }
 }
