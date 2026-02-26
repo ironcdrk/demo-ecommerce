@@ -2,7 +2,9 @@
 
 namespace App\Infraestructure\Orders\Models;
 
+use App\Infraestructure\Catalog\Models\Product; // ajusta a tu path real
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class OrderItem extends Model
 {

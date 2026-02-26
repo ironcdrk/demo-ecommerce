@@ -12,6 +12,32 @@ use Illuminate\Validation\ValidationException;
 
 class OrderController extends Controller
 {
+    public function index(Request $request)
+    {
+        $userId = (int) $request->user()->id;
+
+        $orders = Order::query()
+            ->where('user_id', $userId)
+            ->with('items')            
+            ->latest()
+            ->paginate(10);
+
+        return response()->json($orders);
+    }
+
+    public function show(Request $request, Order $order)
+    {
+        $userId = (int) $request->user()->id;
+
+        if ((int) $order->user_id !== $userId) {
+            return response()->json(['message' => 'Forbidden'], 403);
+        }
+
+        $order->load('items.product');
+
+        return response()->json($order);
+    }
+
     public function store(Request $request, CreateOrderHandler $handler)
     {
         $data = $request->validate([
