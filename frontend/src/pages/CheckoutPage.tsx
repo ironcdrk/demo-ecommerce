@@ -5,7 +5,7 @@ import {
   getCartFromStorage,
   getCartTotal,
   clearCart,
-} from "../utils/car.ts";
+} from "../utils/car";
 
 interface CheckoutForm {
   customer_name: string,
