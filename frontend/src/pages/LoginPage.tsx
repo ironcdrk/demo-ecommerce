@@ -39,8 +39,7 @@ export default function LoginPage() {
               <ShoppingBag className="h-5 w-5" />
             </div>
             <div>
-              <p className="text-lg font-semibold text-gray-900">DemoEcommerce</p>
-              <p className="text-sm text-gray-500">Accede a tu cuenta</p>
+              <p className="text-lg font-semibold text-gray-900">Accede a tu cuenta</p>
             </div>
           </div>
 
