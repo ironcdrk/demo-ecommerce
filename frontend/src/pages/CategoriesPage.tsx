@@ -89,7 +89,6 @@ export default function CategoriesPage() {
                       marginBottom: "0.75rem",
                     }}
                   >
-                    slug: <code>{cat.slug}</code>
                   </p>
                 </div>
                 <button

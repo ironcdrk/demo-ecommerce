@@ -56,7 +56,7 @@ export default function Header() {
             Carrito ({cartCount})
           </Link>
           */}
-          <Link to="/cart" className="site-header__icon-btn">
+          <Link to="/login" className="site-header__icon-btn">
             <UserKey size={18} strokeWidth={2} />
             <span>Login</span>
           </Link>
