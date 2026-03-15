@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { House, UserKey, LucideLayoutGrid } from "lucide-react";
 
 const STORAGE_KEY = "demo_cart_v1";
 
@@ -42,16 +43,22 @@ export default function Header() {
         <div className="site-header__logo">Mini DemoEcommerce</div>
 
         <nav className="site-header__nav">
-          {/*<button className="site-header__icon-btn">Home</button>*/}
           <Link to="/" className="site-header__icon-btn">
-            Home
+            <House size={18} strokeWidth={2} />
+            <span>Home</span>
           </Link>
           <Link to="/categories" className="site-header__icon-btn">
-            Categories
+            <LucideLayoutGrid size={18} strokeWidth={2} />
+            <span>Categorías</span>
           </Link>
-          {/*<button className="site-header__icon-btn">Carrito (0)</button>*/}
+          {/*
           <Link to="/cart" className="site-header__icon-btn">
             Carrito ({cartCount})
+          </Link>
+          */}
+          <Link to="/cart" className="site-header__icon-btn">
+            <UserKey size={18} strokeWidth={2} />
+            <span>Login</span>
           </Link>
         </nav>
       </div>
