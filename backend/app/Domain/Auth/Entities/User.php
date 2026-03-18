@@ -43,11 +43,24 @@ final class User
     /** @return Role[] */
     public function roles(): array { return $this->roles; }
 
-     public function hasRole(Role $role): bool
+    public function hasRole(Role $role): bool
     {
         foreach ($this->roles as $r) {
             if ($r === $role) return true;
         }
         return false;
+    }
+
+    public static function reconstitute(
+        int $id,
+        string $name,
+        string $email,
+        string $passwordHash,
+        Role $role,
+        ?string $createdAtIso = null,
+    ): self {
+        $self = new self($name, $email, $passwordHash, [$role], $createdAtIso);
+        $self->id = $id;
+        return $self;
     }
 }

@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Infrastructure\Orders\Repositories;
+namespace App\Infraestructure\Orders\Repositories;
 
 use App\Domain\Orders\Repositories\OrderRepository;
-use App\Infrastructure\Orders\Models\OrderModel;
-use App\Infrastructure\Orders\Models\OrderItemModel;
+use App\Infraestructure\Orders\Models\OrderModel;
+use App\Infraestructure\Orders\Models\OrderItemModel;
 
 final class EloquentOrderRepository implements OrderRepository
 {

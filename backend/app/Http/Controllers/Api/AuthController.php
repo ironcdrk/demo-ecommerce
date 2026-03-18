@@ -17,6 +17,7 @@ use App\Application\Auth\Handlers\RefreshTokenHandler;
 use App\Application\Auth\Commands\RegisterUserCommand;
 use App\Application\Auth\Commands\LogoutCommand;
 use App\Application\Auth\Commands\RefreshTokenCommand;
+use App\Application\Auth\Commands\LoginCommand;
 
 use App\Application\Auth\DTO\LoginData;
 

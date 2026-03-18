@@ -4,7 +4,7 @@ namespace App\Application\Auth\Handlers;
 
 use App\Application\Auth\DTO\RegisterData;
 use App\Domain\Auth\Enums\Role;
-use App\Models\User;
+use App\Domain\Auth\Entities\User;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;

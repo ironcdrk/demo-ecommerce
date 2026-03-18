@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Infrastructure\Catalog\Repositories;
+namespace App\Infraestructure\Catalog\Repositories;
 
 use App\Domain\Catalog\Entities\Product as DomainProduct;
 use App\Domain\Catalog\Repositories\ProductRepository;
-use App\Infrastructure\Catalog\Models\ProductModel;
+use App\Infraestructure\Catalog\Models\ProductModel;
 
 final class EloquentProductRepository implements ProductRepository
 {
