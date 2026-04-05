@@ -8,12 +8,18 @@ export interface LoginPayload {
 }
 
 export interface LoginResponse {
-  token: string;
-  user: {
-    id: number;
-    name: string;
-    email: string;
+  success: boolean;
+  data: {
+    user: {
+      id: number;
+      name: string;
+      email: string;
+      role: string;
+    };
+    token: string;
+    token_type: string;
   };
+  errors: string[];
 }
 
 export async function loginRequest(payload: LoginPayload): Promise<LoginResponse> {
@@ -29,7 +35,7 @@ export async function loginRequest(payload: LoginPayload): Promise<LoginResponse
 
   const data = await res.json();
 
-  if (!res.ok) {
+  if (!res.ok || !data.success) {
     throw new Error(data?.message || "Credenciales inválidas");
   }
 

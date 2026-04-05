@@ -21,9 +21,9 @@ export function useAuth() {
         password,
         device_name: "web",
       });
-
-      localStorage.setItem("token", response.token);
-      localStorage.setItem("user", JSON.stringify(response.user));
+      const { user, token } = response.data;
+      localStorage.setItem("token", token);
+      localStorage.setItem("user", JSON.stringify(user));
       window.dispatchEvent(new Event("auth_changed"));
       return response;
     } catch (err) {

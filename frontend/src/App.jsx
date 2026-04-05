@@ -7,6 +7,7 @@ import Main from "./components/layout/MainLayout";
 import { Routes, Route } from 'react-router-dom';
 import CartPage from './pages/CartPage';
 import CheckoutPage from './pages/CheckoutPage';
+import MainLayout from './components/layout/MainLayout';
 
 
 function App() {
