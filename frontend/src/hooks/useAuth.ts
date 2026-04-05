@@ -24,7 +24,7 @@ export function useAuth() {
 
       localStorage.setItem("token", response.token);
       localStorage.setItem("user", JSON.stringify(response.user));
-
+      window.dispatchEvent(new Event("auth_changed"));
       return response;
     } catch (err) {
       const message =

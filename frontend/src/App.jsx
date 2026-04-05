@@ -13,13 +13,15 @@ function App() {
  return (
       <Routes>
           {/* Ruta raíz con layout */}
-          <Route path="/" element={<Main />}>
-          <Route index element={<HomePage />} />
-          <Route path="login" element={<LoginPage />} />
-          <Route path="categories" element={<CategoriesPage />} />
-          <Route path="categories/:categoryId/products" element={<CategoryProductsPage />} />
-          <Route path="cart" element={<CartPage />} />
-          <Route path="/checkout" element={<CheckoutPage />} />
+          <Route element={<MainLayout />}>
+            <Route path="/" element={<Main />}>
+            <Route index element={<HomePage />} />
+            <Route path="categories" element={<CategoriesPage />} />
+            <Route path="categories/:categoryId/products" element={<CategoryProductsPage />} />
+            <Route path="cart" element={<CartPage />} />
+            <Route path="/checkout" element={<CheckoutPage />} />
+          </Route>
+          <Route path="/login" element={<LoginPage />} />
         </Route>
       </Routes>
   );

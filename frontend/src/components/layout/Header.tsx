@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { House, UserKey, LucideLayoutGrid } from "lucide-react";
+import { useAuth } from "../../hooks/useAuth";
 
 const STORAGE_KEY = "demo_cart_v1";
 
@@ -16,10 +17,13 @@ function getCartCountFromStorage(): number {
 }
 
 export default function Header() {
+  const { isAuthenticated, getUser, logout } = useAuth();
 
   const [cartCount, setCartCount] = useState<number>(() =>
     getCartCountFromStorage()
   );
+
+  const [user, setUser] = useState(() => getUser());
 
   useEffect(() => {
     const handleCartChange = () => {
@@ -37,6 +41,18 @@ export default function Header() {
     };
   }, []);
 
+  useEffect(() => {
+    const handleAuthChange = () => {
+      setUser(getUser());
+    };
+
+    window.addEventListener("auth_changed", handleAuthChange);
+
+    return () => {
+      window.removeEventListener("auth_changed", handleAuthChange);
+    };
+  }, []);
+
   return (
     <header className="site-header">
       <div className="site-header__inner">
@@ -51,15 +67,39 @@ export default function Header() {
             <LucideLayoutGrid size={18} strokeWidth={2} />
             <span>Categorías</span>
           </Link>
-          {/*
-          <Link to="/cart" className="site-header__icon-btn">
-            Carrito ({cartCount})
-          </Link>
-          */}
-          <Link to="/login" className="site-header__icon-btn">
-            <UserKey size={18} strokeWidth={2} />
-            <span>Login</span>
-          </Link>
+          {isAuthenticated() && (
+            <Link to="/cart" className="site-header__icon-btn">
+              🛒 <span>Carrito ({cartCount})</span>
+            </Link>
+          )}
+          {isAuthenticated() ? (
+            <div className="site-header__icon-btn">
+              <span>👤 {user?.name}</span>
+
+              <button
+                onClick={() => {
+                  logout();
+                  window.dispatchEvent(new Event("auth_changed"));
+                  window.location.href = "/login"; // simple por ahora
+                }}
+                style={{
+                  marginLeft: "0.5rem",
+                  cursor: "pointer",
+                  border: "none",
+                  background: "transparent",
+                  color: "#ef4444",
+                  fontWeight: 500,
+                }}
+              >
+                Salir
+              </button>
+            </div>
+          ) : (
+            <Link to="/login" className="site-header__icon-btn">
+              <UserKey size={18} strokeWidth={2} />
+              <span>Login</span>
+            </Link>
+          )}
         </nav>
       </div>
     </header>
