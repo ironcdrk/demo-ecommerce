@@ -25,8 +25,21 @@ public class PurchaseStepDef {
     @Given("el usuario accede al sitio DemoEcommerce")
     public void elUsuarioAccedeAlSitioDemoEcommerce() {
         OnStage.setTheStage(new OnlineCast());
-        theActorCalled("Invitado").attemptsTo(
+
+        theActorCalled("Carlos").attemptsTo(
                 NavigateTo.DemoEcommerce()
+        );
+    }
+
+    @Then("inicia sesión con las siguientes credenciales:")
+    public void iniciaSesionConLasSiguientesCredenciales(DataTable table) {
+        Map<String, String> credentials = table.asMaps(String.class, String.class).get(0);
+
+        OnStage.theActorInTheSpotlight().attemptsTo(
+                Login.withCredentials(
+                        credentials.get("email"),
+                        credentials.get("password")
+                )
         );
     }
 

@@ -6,6 +6,9 @@ Feature: Flujo de compra en DemoEcommerce
   
   Scenario Outline: Compra exitosa de productos en DemoEcommerce
     Given el usuario accede al sitio DemoEcommerce
+    Then inicia sesión con las siguientes credenciales:
+      | username | password  |
+      | <username> | <password> |
     When agrega los siguientes productos al carrito
       | categoria | producto              |
       | Laptops   | MacBook Pro 13        |
@@ -20,5 +23,5 @@ Feature: Flujo de compra en DemoEcommerce
     Then deberia ver el mensaje de confirmacion "¡Gracias por tu compra!"
 
     Examples:
-      | name         | country | city  | card         | month | year |
-      | Carlos Licto | Ecuador | Quito | 45187843333  | 12    | 2025 |
+      | username         | password   | name         | country | city  | card         | month | year |
+      | admin@demo.local | Admin123!  | Carlos Licto | Ecuador | Quito | 45187843333  | 12    | 2025 |
