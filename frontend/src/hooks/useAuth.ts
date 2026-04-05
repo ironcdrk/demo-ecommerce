@@ -42,8 +42,15 @@ export function useAuth() {
   }
 
   function getUser(): AuthUser | null {
-    const rawUser = localStorage.getItem("user");
-    return rawUser ? JSON.parse(rawUser) : null;
+    try {
+      const rawUser = localStorage.getItem("user");
+
+      if (!rawUser || rawUser === "undefined") return null;
+
+      return JSON.parse(rawUser);
+    } catch {
+      return null;
+    }
   }
 
   function getToken(): string | null {
