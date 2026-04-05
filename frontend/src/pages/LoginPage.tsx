@@ -65,7 +65,7 @@ export default function LoginPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="correo@ejemplo.com"
-                  className={`form-input ${fieldErrors.email ? "form-input-error" : ""}`}
+                  className={`user_email form-input ${fieldErrors.email ? "form-input-error" : ""}`}
                 />
               </div>
 
@@ -87,7 +87,7 @@ export default function LoginPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className={`form-input ${fieldErrors.password ? "form-input-error" : ""}`}
+                  className={`user_password form-input ${fieldErrors.password ? "form-input-error" : ""}`}
                 />
 
                 <button
