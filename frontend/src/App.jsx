@@ -15,15 +15,13 @@ function App() {
       <Routes>
           {/* Ruta raíz con layout */}
           <Route element={<MainLayout />}>
-            <Route path="/" element={<Main />}>
-            <Route index element={<HomePage />} />
+            <Route path="/" element={<HomePage />} />
             <Route path="categories" element={<CategoriesPage />} />
             <Route path="categories/:categoryId/products" element={<CategoryProductsPage />} />
             <Route path="cart" element={<CartPage />} />
             <Route path="/checkout" element={<CheckoutPage />} />
           </Route>
           <Route path="/login" element={<LoginPage />} />
-        </Route>
       </Routes>
   );
 }

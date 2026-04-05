@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { House, UserKey, LucideLayoutGrid } from "lucide-react";
+import { House, UserKey, LucideLayoutGrid, LucideShoppingCart, LucideUser } from "lucide-react";
 import { useAuth } from "../../hooks/useAuth";
 
 const STORAGE_KEY = "demo_cart_v1";
@@ -69,12 +69,15 @@ export default function Header() {
           </Link>
           {isAuthenticated() && (
             <Link to="/cart" className="site-header__icon-btn">
-              🛒 <span>Carrito ({cartCount})</span>
+              <LucideShoppingCart size={18} strokeWidth={2} />
+               <span>Carrito ({cartCount})</span>
             </Link>
           )}
           {isAuthenticated() ? (
             <div className="site-header__icon-btn">
-              <span>👤 {user?.name}</span>
+              
+              <LucideUser size={18} strokeWidth={2} />
+              <span> {user?.name}</span>
 
               <button
                 onClick={() => {
@@ -83,7 +86,7 @@ export default function Header() {
                   window.location.href = "/login"; // simple por ahora
                 }}
                 style={{
-                  marginLeft: "0.5rem",
+                  marginLeft: "0.1rem",
                   cursor: "pointer",
                   border: "none",
                   background: "transparent",
@@ -91,7 +94,7 @@ export default function Header() {
                   fontWeight: 500,
                 }}
               >
-                Salir
+               <span>Salir</span>
               </button>
             </div>
           ) : (
