@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import { env } from "@/shared/config/env";
 
 interface Product {
   id: number;
@@ -10,7 +11,7 @@ interface Product {
 }
 
 export default function CategoryProductsPage() {
-  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+  const API_BASE_URL = env.baseUrl;
   const { categoryId } = useParams<{ categoryId: string }>();
 
   const [products, setProducts] = useState<Product[]>([]);

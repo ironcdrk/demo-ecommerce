@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { env } from "@/shared/config/env";
 
 interface CartItem {
   id: number;
@@ -12,7 +13,7 @@ interface CartItem {
 const STORAGE_KEY = "demo_cart_v1";
 
 export default function CartPage() {
-  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+  const API_BASE_URL = env.baseUrl;
 
   const [items, setItems] = useState<CartItem[]>([]);
   const [loading, setLoading] = useState<boolean>(true);  
