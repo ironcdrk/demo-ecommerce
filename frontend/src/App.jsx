@@ -18,8 +18,22 @@ function App() {
             <Route path="/" element={<HomePage />} />
             <Route path="categories" element={<CategoriesPage />} />
             <Route path="categories/:categoryId/products" element={<CategoryProductsPage />} />
-            <Route path="cart" element={<CartPage />} />
-            <Route path="/checkout" element={<CheckoutPage />} />
+            <Route
+              path="/cart"
+              element={
+                <ProtectedRoute>
+                  <CartPage />
+                </ProtectedRoute>
+              }
+            />
+             <Route
+              path="/checkout"
+              element={
+                <ProtectedRoute>
+                  <CheckoutPage />
+                </ProtectedRoute>
+              }
+            />
           </Route>
           <Route path="/login" element={<LoginPage />} />
       </Routes>

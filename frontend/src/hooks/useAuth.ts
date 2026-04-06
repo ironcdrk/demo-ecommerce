@@ -39,6 +39,9 @@ export function useAuth() {
   function logout() {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
+    localStorage.removeItem("demo_cart_v1");
+    window.dispatchEvent(new Event("auth_changed"));
+    window.dispatchEvent(new Event("cart_updated"));
   }
 
   function getUser(): AuthUser | null {
