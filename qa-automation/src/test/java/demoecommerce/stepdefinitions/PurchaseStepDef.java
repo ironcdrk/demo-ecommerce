@@ -27,11 +27,12 @@ public class PurchaseStepDef {
         OnStage.setTheStage(new OnlineCast());
 
         theActorCalled("Carlos").attemptsTo(
-                NavigateTo.DemoEcommerce()
+                NavigateTo.DemoEcommerce(),
+                GoToLoginPage.fromHome()
         );
     }
 
-    @Then("inicia sesión con las siguientes credenciales:")
+    @Then("inicia sesion con las siguientes credenciales:")
     public void iniciaSesionConLasSiguientesCredenciales(DataTable table) {
         Map<String, String> credentials = table.asMaps(String.class, String.class).get(0);
 
@@ -53,7 +54,14 @@ public class PurchaseStepDef {
     @And("visualiza el contenido del carrito")
     public void visualizaContenidoDelCarrito() {
         OnStage.theActorInTheSpotlight().attemptsTo(
-                ViewCartTask.openCart()
+                GoToCartPageTask.openCart()
+        );
+    }
+
+    @And("procede al checkout")
+    public void procedeAlCheckout() {
+        OnStage.theActorInTheSpotlight().attemptsTo(
+                ProceedToCheckoutTask.now()
         );
     }
 
