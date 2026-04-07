@@ -9,6 +9,7 @@ Feature: Flujo de compra en DemoEcommerce
     Then inicia sesion con las siguientes credenciales:
       | email | password  |
       | <email> | <password> |
+    Then deberia acceder al home exitosamente
     When agrega los siguientes productos al carrito
       | categoria | producto              |
       | Laptops   | MacBook Pro 13        |

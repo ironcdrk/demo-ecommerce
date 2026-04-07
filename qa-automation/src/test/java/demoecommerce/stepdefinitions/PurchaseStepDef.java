@@ -8,6 +8,8 @@ import io.cucumber.java.en.When;
 import io.cucumber.java.en.Then;
 import net.serenitybdd.screenplay.actors.OnStage;
 import net.serenitybdd.screenplay.actors.OnlineCast;
+import net.serenitybdd.screenplay.waits.WaitUntil;
+import demoecommerce.pages.HomePage;
 import demoecommerce.tasks.*;
 
 import java.util.List;
@@ -40,8 +42,13 @@ public class PurchaseStepDef {
                 Login.withCredentials(
                         credentials.get("email"),
                         credentials.get("password")
-                )
+                )               
         );
+    }
+
+    @Then("deberia acceder al home exitosamente")
+    public void deberiaAccederAlHomeExitosamente() {
+         ValidateSuccessfulLoginTask.onHomePage().performAs(OnStage.theActorInTheSpotlight());
     }
 
     @When("agrega los siguientes productos al carrito")

@@ -6,6 +6,7 @@ import net.serenitybdd.screenplay.Tasks;
 import net.serenitybdd.screenplay.actions.Click;
 import net.serenitybdd.screenplay.actions.Enter;
 import net.serenitybdd.screenplay.waits.WaitUntil;
+import demoecommerce.pages.HomePage;
 import demoecommerce.pages.LoginPage;
 
 import static net.serenitybdd.screenplay.matchers.WebElementStateMatchers.isVisible;
