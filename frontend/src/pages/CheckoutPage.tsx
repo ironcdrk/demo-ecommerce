@@ -87,11 +87,14 @@ export default function CheckoutPage() {
 
     setLoading(true);
 
+    const token = localStorage.getItem("token");
+
     try {
         const res = await fetch("http://localhost:8080/api/orders", {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
+             Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(payload),
         });

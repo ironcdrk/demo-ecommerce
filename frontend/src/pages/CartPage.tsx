@@ -26,7 +26,23 @@ export default function CartPage() {
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved) {
-        setItems(JSON.parse(saved));
+        const parsed = JSON.parse(saved) as Array<{
+          id: number | string;
+          name: string;
+          price: number | string;
+          quantity: number | string;
+          image_url?: string;
+        }>;
+
+        const normalizedItems: CartItem[] = parsed.map((item) => ({
+          id: Number(item.id),
+          name: item.name,
+          price: Number(item.price),
+          quantity: Number(item.quantity),
+          image_url: item.image_url,
+        }));
+
+        setItems(normalizedItems);
       }
     } catch (err) {
       console.error("Error leyendo carrito:", err);
