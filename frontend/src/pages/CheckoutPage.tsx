@@ -7,6 +7,9 @@ import {
   clearCart,
 } from "../utils/car";
 
+import { env } from "@/shared/config/env";
+const API_URL = env.apiUrl;
+
 interface CheckoutForm {
   customer_name: string,
   country: string,
@@ -90,7 +93,7 @@ export default function CheckoutPage() {
     const token = localStorage.getItem("token");
 
     try {
-        const res = await fetch("http://localhost:8080/api/orders", {
+        const res = await fetch(`${API_URL}/orders`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",

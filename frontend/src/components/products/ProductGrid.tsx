@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { fetchProducts, type Product } from "../../api/products";
 import { env } from "@/shared/config/env";
+import { useAuth } from "../../hooks/useAuth";
+
 const BASE_URL = env.baseUrl;
 
 const STORAGE_KEY = "demo_cart_v1";
@@ -8,7 +10,8 @@ const STORAGE_KEY = "demo_cart_v1";
 export default function ProductGrid() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);  
+  const { isAuthenticated } = useAuth();
 
   useEffect(() => {
       const load = async () => {
@@ -87,10 +90,12 @@ export default function ProductGrid() {
             <div className="product-card__body">
               <h3 className="product-card__title">{p.name}</h3>
               <p className="product-card__price">$ {p.price}</p>
-
+              
+          {isAuthenticated() && (
               <button className="product-card__button" onClick={() => addToCart(p)}>
                 Agregar al carrito
               </button>
+            )}
             </div>
           </article>
         ))}
