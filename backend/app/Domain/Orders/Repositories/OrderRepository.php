@@ -9,7 +9,7 @@ interface OrderRepository
      *  customer_name:string,
      *  country:string,
      *  city:string,
-     *  card_number:string,
+     *  card_last_four:string,
      *  card_month:string,
      *  card_year:string,
      *  total:int|float,

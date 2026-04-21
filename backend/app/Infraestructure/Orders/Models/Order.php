@@ -14,7 +14,7 @@ class Order extends Model
         'customer_name',
         'country',
         'city',
-        'card_number',
+        'card_last_four_numbers',
         'card_month',
         'card_year',
         'total',

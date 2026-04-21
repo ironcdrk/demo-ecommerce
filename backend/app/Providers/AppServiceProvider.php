@@ -15,9 +15,9 @@ use App\Infraestructure\Auth\Repositories\EloquentAccessTokenRepository;
 use App\Infraestructure\Auth\Services\EloquentCredentialsVerifier;
 
 use App\Domain\Catalog\Repositories\ProductRepository;
-//use App\Domain\Orders\Repositories\OrderRepository;
+use App\Domain\Orders\Repositories\OrderRepository;
 use App\Infraestructure\Catalog\Repositories\EloquentProductRepository;
-//use App\Infraestructure\Orders\Repositories\EloquentOrderRepository;
+use App\Infraestructure\Orders\Repositories\EloquentOrderRepository;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -30,7 +30,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(AccessTokenRepository::class, EloquentAccessTokenRepository::class);
         $this->app->bind(CredentialsVerifier::class, EloquentCredentialsVerifier::class);
         $this->app->bind(ProductRepository::class, EloquentProductRepository::class);
-       //$this->app->bind(OrderRepository::class, EloquentOrderRepository::class);
+        $this->app->bind(OrderRepository::class, EloquentOrderRepository::class);
     }
 
     /**

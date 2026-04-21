@@ -41,15 +41,15 @@ class OrderController extends Controller
     public function store(Request $request, CreateOrderHandler $handler)
     {
         $data = $request->validate([
-            'customer_name'  => 'required|string|max:255',
-            'country'        => 'required|string|max:255',
-            'city'           => 'required|string|max:255',
-            'card_number'    => 'required|string|max:32',
-            'card_month'     => 'required|string|max:2',
-            'card_year'      => 'required|string|max:4',
-            'items'          => 'required|array|min:1',
-            'items.*.product_id' => 'required|integer',
-            'items.*.quantity'   => 'required|integer|min:1',
+            'customer_name'       => 'required|string|max:255',
+            'country'             => 'required|string|max:255',
+            'city'                => 'required|string|max:255',
+            'card_number'         => 'required|string|max:32',
+            'card_month'          => 'required|string|max:2',
+            'card_year'           => 'required|string|max:4',
+            'items'               => 'required|array|min:1',
+            'items.*.product_id'  => 'required|integer',
+            'items.*.quantity'    => 'required|integer|min:1',
         ]);
 
         $command = new CreateOrderCommand(
@@ -76,9 +76,9 @@ class OrderController extends Controller
         }
 
         return response()->json([
-            'message' => 'Order created successfully',
-            'order_id' => $result['order_id'],
-            'total' => $result['total'],
+            'message'  => 'Order created successfully',
+            'order_id' => $result['id'],
+            'total'    => $result['total'],
         ], 201);
     }
 }
