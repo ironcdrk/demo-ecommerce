@@ -48,7 +48,8 @@ CMD ["php-fpm"]
 FROM base AS prod
 
 # Configs de PHP para prod
-COPY docker/php/php.prod.ini /usr/local/etc/php/php.ini
+#COPY docker/php/php.prod.ini /usr/local/etc/php/php.ini
+RUN cp "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
 
 # Copiamos el código de Laravel
 COPY . /var/www

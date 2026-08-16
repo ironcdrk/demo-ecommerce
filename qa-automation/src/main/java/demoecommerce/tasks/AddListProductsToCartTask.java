@@ -2,9 +2,13 @@ package demoecommerce.tasks;
 
 import net.serenitybdd.screenplay.Actor;
 import net.serenitybdd.screenplay.Task;
+import net.serenitybdd.screenplay.waits.WaitUntil;
 
 import java.util.List;
 import java.util.Map;
+
+import demoecommerce.pages.HomePage;
+import static net.serenitybdd.screenplay.matchers.WebElementStateMatchers.isVisible;
 
 public class AddListProductsToCartTask implements Task {
 
@@ -19,6 +23,10 @@ public class AddListProductsToCartTask implements Task {
 
     @Override
     public <T extends Actor> void performAs(T actor) {
+         actor.attemptsTo(
+                WaitUntil.the(HomePage.CART_BUTTON, isVisible())
+                    .forNoMoreThan(20).seconds()
+        );
         for (Map<String, String> product : products) {
 
             //String categoria = product.get("categoria");

@@ -1,16 +1,11 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-
-interface Product {
-  id: number;
-  name: string;
-  price: string;
-  description?: string;
-  image_url?: string;
-}
+import { env } from "@/shared/config/env";
+import { fetchProductsByCategory } from "@/api/products";
+import type { Product } from "@/models/Product";
 
 export default function CategoryProductsPage() {
-  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+  const API_BASE_URL = env.baseUrl;
   const { categoryId } = useParams<{ categoryId: string }>();
 
   const [products, setProducts] = useState<Product[]>([]);
@@ -27,23 +22,13 @@ export default function CategoryProductsPage() {
         setLoading(true);
         setError(null);
 
-        const response = await fetch(
-          `http://localhost:8080/api/categories/${categoryId}/products`,
-          { signal: controller.signal }
+        const data = await fetchProductsByCategory(
+          categoryId,
+          controller.signal
         );
-
-        if (!response.ok) {
-          throw new Error("Error al cargar los productos");
-        }
-
-        const data = await response.json();
         
-        setProducts(
-            data.map((p: any) => ({
-                ...p,
-                price: Number(p.price)
-            }))
-        );
+        setProducts(data);
+
       } catch (err: any) {
         if (err.name === "AbortError") return;
         setError(err.message || "Error desconocido");

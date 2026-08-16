@@ -13,10 +13,14 @@ return new class extends Migration
     {
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id')
+                ->nullable()
+                ->constrained()
+                ->nullOnDelete();
             $table->string('customer_name');
             $table->string('country');
             $table->string('city');
-            $table->string('card_number');
+            $table->string('card_last_four_numbers');
             $table->string('card_month');
             $table->string('card_year');
             $table->decimal('total', 10, 2);

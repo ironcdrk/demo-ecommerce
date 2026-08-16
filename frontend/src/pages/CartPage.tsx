@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { env } from "@/shared/config/env";
 
 interface CartItem {
   id: number;
@@ -12,7 +13,7 @@ interface CartItem {
 const STORAGE_KEY = "demo_cart_v1";
 
 export default function CartPage() {
-  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+  const API_BASE_URL = env.baseUrl;
 
   const [items, setItems] = useState<CartItem[]>([]);
   const [loading, setLoading] = useState<boolean>(true);  
@@ -25,7 +26,23 @@ export default function CartPage() {
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved) {
-        setItems(JSON.parse(saved));
+        const parsed = JSON.parse(saved) as Array<{
+          id: number | string;
+          name: string;
+          price: number | string;
+          quantity: number | string;
+          image_url?: string;
+        }>;
+
+        const normalizedItems: CartItem[] = parsed.map((item) => ({
+          id: Number(item.id),
+          name: item.name,
+          price: Number(item.price),
+          quantity: Number(item.quantity),
+          image_url: item.image_url,
+        }));
+
+        setItems(normalizedItems);
       }
     } catch (err) {
       console.error("Error leyendo carrito:", err);

@@ -4,10 +4,8 @@ import net.serenitybdd.annotations.Step;
 import net.serenitybdd.screenplay.Actor;
 import net.serenitybdd.screenplay.Task;
 import net.serenitybdd.screenplay.actions.Click;
-import net.serenitybdd.screenplay.waits.WaitUntil;
 import demoecommerce.pages.PurchaseOrderFormPage;
 
-import static net.serenitybdd.screenplay.matchers.WebElementStateMatchers.isVisible;
 
 public class FinishPurchaseTask implements Task {
     public static FinishPurchaseTask confirm() {

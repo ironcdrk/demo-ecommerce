@@ -8,6 +8,8 @@ import io.cucumber.java.en.When;
 import io.cucumber.java.en.Then;
 import net.serenitybdd.screenplay.actors.OnStage;
 import net.serenitybdd.screenplay.actors.OnlineCast;
+import net.serenitybdd.screenplay.waits.WaitUntil;
+import demoecommerce.pages.HomePage;
 import demoecommerce.tasks.*;
 
 import java.util.List;
@@ -25,9 +27,28 @@ public class PurchaseStepDef {
     @Given("el usuario accede al sitio DemoEcommerce")
     public void elUsuarioAccedeAlSitioDemoEcommerce() {
         OnStage.setTheStage(new OnlineCast());
-        theActorCalled("Invitado").attemptsTo(
-                NavigateTo.DemoEcommerce()
+
+        theActorCalled("Carlos").attemptsTo(
+                NavigateTo.DemoEcommerce(),
+                GoToLoginPage.fromHome()
         );
+    }
+
+    @Then("inicia sesion con las siguientes credenciales:")
+    public void iniciaSesionConLasSiguientesCredenciales(DataTable table) {
+        Map<String, String> credentials = table.asMaps(String.class, String.class).get(0);
+
+        OnStage.theActorInTheSpotlight().attemptsTo(
+                Login.withCredentials(
+                        credentials.get("email"),
+                        credentials.get("password")
+                )               
+        );
+    }
+
+    @Then("deberia acceder al home exitosamente")
+    public void deberiaAccederAlHomeExitosamente() {
+         ValidateSuccessfulLoginTask.onHomePage().performAs(OnStage.theActorInTheSpotlight());
     }
 
     @When("agrega los siguientes productos al carrito")
@@ -40,7 +61,14 @@ public class PurchaseStepDef {
     @And("visualiza el contenido del carrito")
     public void visualizaContenidoDelCarrito() {
         OnStage.theActorInTheSpotlight().attemptsTo(
-                ViewCartTask.openCart()
+                GoToCartPageTask.openCart()
+        );
+    }
+
+    @And("procede al checkout")
+    public void procedeAlCheckout() {
+        OnStage.theActorInTheSpotlight().attemptsTo(
+                ProceedToCheckoutTask.now()
         );
     }
 

@@ -1,53 +1,41 @@
 import { useEffect, useState } from "react";
+import { fetchProducts } from "../../api/products";
+import { env } from "@/shared/config/env";
+import { useAuth } from "../../hooks/useAuth";
+import { Product } from "../../models/Product";
 
-interface Product {
-  id: number;
-  name: string;
-  price: number;
-  description?: string;
-  image_url?: string;
-}
+const BASE_URL = env.baseUrl;
 
 const STORAGE_KEY = "demo_cart_v1";
 
 export default function ProductGrid() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);  
+  const { isAuthenticated } = useAuth();
 
   useEffect(() => {
-    const controller = new AbortController();
-
-    const fetchProducts = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-
-        const response = await fetch("http://localhost:8080/api/products", {
-          signal: controller.signal,
-        });
-
-        if (!response.ok) throw new Error("Error al cargar los productos");
-
-        const data = await response.json();
-
-        const mapped = data.map((p: any) => ({
-          ...p,
-          price: Number(p.price),
-        }));
-
-        setProducts(mapped);
-      } catch (err: any) {
-        if (err.name === "AbortError") return;
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchProducts();
-    return () => controller.abort();
-  }, []);
+      const load = async () => {
+        try {
+          setLoading(true);
+          setError(null);
+          const data = await fetchProducts();
+          /*console.log("Productos cargados", data);
+          const mapped = data.map((p: Product) => ({
+            ...p,
+            price: Number(p.price).toFixed(2),
+          }));*/
+          setProducts(data);
+        } catch (err: any) {
+          console.error(err);
+          setError(err.message ?? "Error al cargar productos");
+        } finally {
+          setLoading(false);
+        }
+      };
+  
+      load();
+    }, []);
 
   // Mostrar solo los primeros 4
   const limitedProducts = products.slice(0, 4);
@@ -90,22 +78,24 @@ export default function ProductGrid() {
             <div className="product-card__image-placeholder">
               {p.image_url ? (
                 <img
-                  src={`http://localhost:8080${p.image_url}`}
+                  src={`${BASE_URL}/${p.image_url}`}
                   alt={p.name}
                   className="product-card__image"
                 />
               ) : (
-                "Imagen"
+                `Imagen de ${p.name}`
               )}
             </div>
 
             <div className="product-card__body">
               <h3 className="product-card__title">{p.name}</h3>
-              <p className="product-card__price">$ {p.price.toFixed(2)}</p>
-
+              <p className="product-card__price">$ {p.price}</p>
+              
+          {isAuthenticated() && (
               <button className="product-card__button" onClick={() => addToCart(p)}>
                 Agregar al carrito
               </button>
+            )}
             </div>
           </article>
         ))}

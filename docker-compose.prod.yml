@@ -17,6 +17,7 @@ services:
   backend:
     build:
       context: ./backend
+      dockerfile: Dockerfile
       target: prod          # 🟢 usamos la etapa prod
     container_name: demoecommerce-backend-prod
     working_dir: /var/www
@@ -38,7 +39,10 @@ services:
   frontend:
     build:
       context: ./frontend
-      target: prod          # 🟢 Nginx sirviendo el build de React
+      target: prod 
+      args:
+        VITE_API_URL: http://localhost:8080/api/v1
+        VITE_SERVER_BASE_URL: http://localhost:8080         # 🟢 Nginx sirviendo el build de React
     container_name: demoecommerce-frontend-prod
     ports:
       - "8081:80"           # Frontend estático en http://localhost:8081

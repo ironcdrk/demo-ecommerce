@@ -1,5 +1,7 @@
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { House, UserKey, LucideLayoutGrid, LucideShoppingCart, LucideUser } from "lucide-react";
+import { useAuth } from "../../hooks/useAuth";
 
 const STORAGE_KEY = "demo_cart_v1";
 
@@ -15,10 +17,13 @@ function getCartCountFromStorage(): number {
 }
 
 export default function Header() {
+  const { isAuthenticated, getUser, logout } = useAuth();
 
   const [cartCount, setCartCount] = useState<number>(() =>
     getCartCountFromStorage()
   );
+
+  const [user, setUser] = useState(() => getUser());
 
   useEffect(() => {
     const handleCartChange = () => {
@@ -36,23 +41,68 @@ export default function Header() {
     };
   }, []);
 
+  useEffect(() => {
+    const handleAuthChange = () => {
+      setUser(getUser());
+    };
+
+    window.addEventListener("auth_changed", handleAuthChange);
+
+    return () => {
+      window.removeEventListener("auth_changed", handleAuthChange);
+    };
+  }, []);
+
   return (
     <header className="site-header">
       <div className="site-header__inner">
         <div className="site-header__logo">Mini DemoEcommerce</div>
 
         <nav className="site-header__nav">
-          {/*<button className="site-header__icon-btn">Home</button>*/}
           <Link to="/" className="site-header__icon-btn">
-            Home
+            <House size={18} strokeWidth={2} />
+            <span>Home</span>
           </Link>
           <Link to="/categories" className="site-header__icon-btn">
-            Categories
+            <LucideLayoutGrid size={18} strokeWidth={2} />
+            <span>Categorías</span>
           </Link>
-          {/*<button className="site-header__icon-btn">Carrito (0)</button>*/}
-          <Link to="/cart" className="site-header__icon-btn">
-            Carrito ({cartCount})
-          </Link>
+          {isAuthenticated() && (
+            <Link to="/cart" className="site-header__icon-btn">
+              <LucideShoppingCart size={18} strokeWidth={2} />
+               <span>Carrito ({cartCount})</span>
+            </Link>
+          )}
+          {isAuthenticated() ? (
+            <div className="site-header__icon-btn">
+              
+              <LucideUser size={18} strokeWidth={2} />
+              <span> {user?.name}</span>
+
+              <button
+                onClick={() => {
+                  logout();
+                  window.dispatchEvent(new Event("auth_changed"));
+                  window.location.href = "/login"; // simple por ahora
+                }}
+                style={{
+                  marginLeft: "0.1rem",
+                  cursor: "pointer",
+                  border: "none",
+                  background: "transparent",
+                  color: "#ef4444",
+                  fontWeight: 500,
+                }}
+              >
+               <span>Salir</span>
+              </button>
+            </div>
+          ) : (
+            <Link to="/login" className="site-header__icon-btn">
+              <UserKey size={18} strokeWidth={2} />
+              <span>Login</span>
+            </Link>
+          )}
         </nav>
       </div>
     </header>
