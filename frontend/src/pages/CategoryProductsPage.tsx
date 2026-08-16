@@ -2,10 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { env } from "@/shared/config/env";
 import { fetchProductsByCategory } from "@/api/products";
-import type {
-  Product,
-  ProductApiResponse,
-} from "@/models/Product";
+import type { Product } from "@/models/Product";
 
 export default function CategoryProductsPage() {
   const API_BASE_URL = env.baseUrl;

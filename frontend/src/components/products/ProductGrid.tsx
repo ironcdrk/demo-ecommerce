@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
-import { fetchProducts, type Product } from "../../api/products";
+import { fetchProducts } from "../../api/products";
 import { env } from "@/shared/config/env";
 import { useAuth } from "../../hooks/useAuth";
+import { Product } from "../../models/Product";
 
 const BASE_URL = env.baseUrl;
 
@@ -19,13 +20,12 @@ export default function ProductGrid() {
           setLoading(true);
           setError(null);
           const data = await fetchProducts();
-          console.log("Productos cargados", data);
+          /*console.log("Productos cargados", data);
           const mapped = data.map((p: Product) => ({
             ...p,
             price: Number(p.price).toFixed(2),
-          }));
-
-          setProducts(mapped);
+          }));*/
+          setProducts(data);
         } catch (err: any) {
           console.error(err);
           setError(err.message ?? "Error al cargar productos");

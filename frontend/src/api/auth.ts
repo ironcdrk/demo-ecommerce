@@ -1,6 +1,4 @@
-import { env } from "@/shared/config/env";
 import { apiFetch } from "@/shared/api/apiClient";
-const API_URL = env.apiUrl;
 
 export interface LoginPayload {
   email: string;

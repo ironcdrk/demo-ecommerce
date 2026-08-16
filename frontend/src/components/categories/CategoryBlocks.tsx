@@ -1,7 +1,8 @@
 // src/components/categories/CategoryBlocks.tsx
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { fetchCategories, type Category } from "../../api/categories";
+import { fetchCategories } from "../../api/categories";
+import { Category } from "../../models/Category";
 
 export default function CategoryBlocks() {
   const [categories, setCategories] = useState<Category[]>([]);

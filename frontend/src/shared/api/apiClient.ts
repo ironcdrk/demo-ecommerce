@@ -13,7 +13,7 @@ export async function apiFetch<T>(
         "Content-Type": "application/json",
         ...(token && {
             Authorization: `Bearer ${token}`,
-            })
+            }),
         ...options.headers,
         },
     });
