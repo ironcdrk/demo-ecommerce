@@ -1,4 +1,5 @@
 import { env } from "@/shared/config/env";
+import { apiFetch } from "@/shared/api/apiClient";
 const API_URL = env.apiUrl;
 
 export interface LoginPayload {
@@ -23,7 +24,11 @@ export interface LoginResponse {
 }
 
 export async function loginRequest(payload: LoginPayload): Promise<LoginResponse> {
-  console.log("URL de login:", `${API_URL}/auth/login`);
+  return apiFetch<LoginResponse>("/auth/login", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+  /*console.log("URL de login:", `${API_URL}/auth/login`);
   const res = await fetch(`${API_URL}/auth/login`, {
     method: "POST",
     headers: {
@@ -39,5 +44,5 @@ export async function loginRequest(payload: LoginPayload): Promise<LoginResponse
     throw new Error(data?.message || "Credenciales inválidas");
   }
 
-  return data;
+  return data;*/
 }

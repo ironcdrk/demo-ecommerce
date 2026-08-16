@@ -7,8 +7,7 @@ import {
   clearCart,
 } from "../utils/car";
 
-import { env } from "@/shared/config/env";
-const API_URL = env.apiUrl;
+import { createOrder } from "@/api/order";
 
 interface CheckoutForm {
   customer_name: string,
@@ -91,9 +90,13 @@ export default function CheckoutPage() {
     setLoading(true);
 
     const token = localStorage.getItem("token");
+    if (!token) {
+        setError("Debes iniciar sesión para completar la compra.");
+        return;
+    }
 
     try {
-        const res = await fetch(`${API_URL}/orders`, {
+        /*const res = await fetch(`${API_URL}/orders`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
@@ -107,7 +110,8 @@ export default function CheckoutPage() {
         const data = await res.json().catch(() => null);
         console.log("Error API orders:", data);
         throw new Error("No se pudo completar el pedido.");
-        }
+        }*/
+        await createOrder(payload);
 
         clearCart();
         setShowModal(true);

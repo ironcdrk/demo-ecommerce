@@ -1,19 +1,13 @@
-import { env } from "@/shared/config/env";
-const API_URL = env.apiUrl;
+import { apiFetch } from "@/shared/api/apiClient";
+import type {
+  Product,
+  ProductApiResponse,
+} from "@/models/Product";
 
-export interface Product {
-  id: number;
-  name: string;
-  price: string;
-  slug: string;
-  description?: string;
-  image_url?: string;
-  created_at: string;
-  updated_at: string;
-}
 
 export async function fetchProducts(): Promise<Product[]> {
-  const res = await fetch(`${API_URL}/products`);
+  return apiFetch<Product[]>("/products");
+  /*const res = await fetch(`${API_URL}/products`);
 
   if (!res.ok) {
     throw new Error(`Error al cargar categorías: ${res.status}`);
@@ -25,5 +19,20 @@ export async function fetchProducts(): Promise<Product[]> {
     throw new Error("La respuesta del API no es un array");
   }
 
-  return data as Product[];
+  return data as Product[];*/
+}
+
+export async function fetchProductsByCategory(
+  categoryId: string,
+  signal?: AbortSignal
+): Promise<Product[]> {
+  const data = await apiFetch<ProductApiResponse[]>(
+    `/categories/${categoryId}/products`,
+    { signal }
+  );
+
+  return data.map((product) => ({
+    ...product,
+    price: Number(product.price),
+  }));
 }

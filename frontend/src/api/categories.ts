@@ -1,16 +1,12 @@
-import { env } from "@/shared/config/env";
-const API_URL = env.apiUrl;
+import { apiFetch } from "@/shared/api/apiClient";
+import type { Category } from "@/models/Category";
 
-export interface Category {
-  id: number;
-  name: string;
-  slug: string;
-  created_at: string;
-  updated_at: string;
-}
+
 
 export async function fetchCategories(): Promise<Category[]> {
-  const res = await fetch(`${API_URL}/categories`);
+  return apiFetch<Category[]>("/categories");
+
+  /*const res = await fetch(`${API_URL}/categories`);
 
   if (!res.ok) {
     throw new Error(`Error al cargar categorías: ${res.status}`);
@@ -22,5 +18,5 @@ export async function fetchCategories(): Promise<Category[]> {
     throw new Error("La respuesta del API no es un array");
   }
 
-  return data as Category[];
+  return data as Category[];*/
 }

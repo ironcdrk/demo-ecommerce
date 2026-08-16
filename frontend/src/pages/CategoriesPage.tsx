@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { fetchCategories, type Category } from "../api/categories";
+import { fetchCategories } from "../api/categories";
+import type { Category } from "@/models/Category";
 
 export default function CategoriesPage() {
   const [categories, setCategories] = useState<Category[]>([]);
