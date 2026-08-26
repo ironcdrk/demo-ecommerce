@@ -1,4 +1,5 @@
 # DemoEcommerce
+
 Full-Stack Application · Monorepo · QA Automation
 
 ![PHP](https://img.shields.io/badge/PHP-8.2-777BB4?logo=php)
@@ -12,550 +13,252 @@ Full-Stack Application · Monorepo · QA Automation
 
 ---
 
-## 📌 Descripción general
+## What this is
 
-DemoEcommerce es un monorepo que integra:
+DemoEcommerce is a monorepo simulating a complete e-commerce purchase flow, built to practice and demonstrate full-stack development, REST API design, layered backend architecture, and end-to-end QA automation. It integrates:
 
-- Backend REST API en Laravel
-- Frontend SPA en React + TypeScript
-- Autenticación con Laravel Sanctum
-- Base de datos PostgreSQL
-- QA Automation con Selenium + Cucumber + Serenity
-- Entorno ejecutable vía Docker Compose
-- Configuración separada para desarrollo y producción
+- A Laravel REST API backend, structured with a Domain/Application/Infrastructure layering (see [Backend Architecture](#backend-architecture))
+- A React + TypeScript SPA frontend
+- Token-based authentication via Laravel Sanctum
+- PostgreSQL for persistence
+- Automated E2E testing with Selenium + Cucumber + Serenity BDD (Java)
+- A fully containerized dev environment via Docker Compose
 
-El objetivo es simular un flujo de compra completo y medible con pruebas automatizadas de extremo a extremo, además de servir como proyecto de práctica para desarrollo Full Stack, diseño de APIs, QA Automation y CI/CD.
+## Live demo
 
----
+Not yet deployed. The project currently runs locally via Docker Compose — see [Local Setup](#local-setup) below. A hosted demo is planned; this section will be updated with the link once available.
 
-## 🧱 Estructura del Monorepo
+## Features
 
-```text
-DemoEcommerce/
-│── backend/                  # API Laravel + configuración PHP
-│── frontend/                 # SPA React + TypeScript
-│── qa-automation/            # Selenium + Cucumber + Serenity BDD
-│── docker/
-│   └── nginx/                # Configuración Nginx
-│── docs/                     # Capturas y evidencias
-│── docker-compose.dev.yml
-│── docker-compose.prod.yml
-│── .gitignore
+**Working today:**
+- Product catalog with categories
+- Products filtered by category
+- Cart persisted in browser `localStorage`
+- Login with token-based authentication (Laravel Sanctum)
+- Authenticated checkout and order creation
+- Centralized REST client and environment configuration on the frontend
+- Strict-mode TypeScript across the frontend
+
+**Not yet implemented:**
+- Product detail page
+- User registration exposed as a public-facing flow (see [Known Issues](#known-issues) — backend logic exists but isn't confirmed wired to a public route yet)
+
+## Backend Architecture
+
+The backend is not a conventional flat Laravel MVC app — it follows a Domain-Driven / hexagonal layering to separate business rules from framework concerns:
+
+```
+backend/app/
+├── Domain/           Framework-agnostic business rules: Entities, Repository
+│                     interfaces, Services, Enums. No Laravel/Eloquent dependency.
+├── Application/      Use cases as Commands + Handlers (CQRS-style). Orchestrates
+│                     Domain objects to fulfill a specific action.
+├── Infraestructure/  Concrete implementations of Domain repository interfaces,
+│                     using Eloquent models and Postgres.
+├── Http/             Controllers, Middleware, Form Requests. Thin layer that
+│                     translates HTTP into Application commands.
+└── Providers/        Laravel service bindings.
 ```
 
-El frontend centraliza el acceso HTTP y la configuración común.
+Example request flow — placing an order:
 
-```text
+```
+OrderController
+    → CreateOrderCommand
+    → CreateOrderHandler                  (Application layer)
+    → Domain\Orders\Entities (Order, OrderItem)   (Domain layer)
+    → EloquentOrderRepository              (Infrastructure layer)
+    → PostgreSQL
+```
+
+This adds structure at the cost of more files for a project this size — see [Key Decisions](#key-decisions-and-tradeoffs) for why.
+
+## Frontend Structure
+
+```
 frontend/src/
-│── api/
-│   ├── auth.ts
-│   ├── categories.ts
-│   ├── products.ts
-│   └── orders.ts
-│
-│── models/
-│   └── Product.ts
-│
-│── shared/
-│   ├── api/
-│   │   └── apiClient.ts
-│   └── config/
-│       └── env.ts
-│
-│── pages/
-│── components/
-│── hooks/
-│── utils/
+├── api/           One module per resource (auth, categories, products, orders) —
+│                  each knows its own endpoints, nothing else.
+├── shared/
+│   ├── api/       apiClient.ts — centralizes base URL, headers, auth token,
+│   │              fetch execution, and JSON/error handling.
+│   └── config/    env.ts — centralizes environment variables.
+├── models/        Shared TypeScript types (e.g. Product), decoupled from raw
+│                  API response shapes.
+├── pages/         Route-level components.
+├── components/    Reusable UI building blocks.
+├── hooks/         Custom React hooks (e.g. useAuth).
+└── validators/    Client-side input validation.
 ```
 
----
+Request flow example:
+```
+CategoryProductsPage → products.ts → apiClient.ts → Laravel API
+```
+Pages never call `fetch()` directly — everything goes through `apiClient.ts`, which is the only place that knows about auth headers, base URLs, and HTTP error handling.
 
-## 🚀 Ejecución del proyecto
+The API layer also normalizes response data before it reaches components — for example, Laravel may return `price` as a string (`"19.99"`), which `products.ts` converts to a `number` before handing it to the `Product` model used throughout the frontend.
 
-### Requisitos previos
+## API Endpoints
 
-- Docker Desktop
-- Docker Compose
+Base path: `/api/v1`
+
+### Public
+
+| Method | Endpoint | Description |
+|---|---|---|
+| GET | `/categories` | List categories |
+| GET | `/categories/{id}/products` | Products in a category |
+| GET | `/products` | List products |
+| GET | `/products/{id}` | Get product by ID |
+| GET | `/products/slug/{slug}` | Get product by slug |
+| POST | `/auth/login` | Authenticate, returns Sanctum token |
+
+### Authenticated (Bearer token required)
+
+| Method | Endpoint | Description |
+|---|---|---|
+| POST | `/orders` | Create an order |
+
+> Authenticated requests: `Authorization: Bearer <token>`. A role-checking middleware (`EnsureUserHasRole`) exists in the codebase for role-gated routes — currently no endpoints in `routes/api.php` are confirmed to use it; update this table if/when one does.
+
+## Authentication
+
+```
+User
+  → POST /api/v1/auth/login
+  → Laravel validates credentials
+  → Sanctum issues a token
+  → Frontend stores the token
+  → apiClient attaches it as a Bearer header on subsequent requests
+  → Protected endpoint validates the token before responding
+```
+
+## Local Setup
+
+### Prerequisites
+- Docker Desktop (with WSL2 backend enabled, on Windows — this is required, not optional)
 - Git
-- WSL2 recomendado si estás en Windows
 
-### Iniciar todo el stack en desarrollo
+### 1. Clone and configure environment
+```bash
+git clone <repo-url>
+cd demo-ecommerce
+```
 
-Desde la raíz del repositorio:
+There is currently no `.env.example` committed (see [Known Issues](#known-issues)). Create `backend/.env` manually with the following, which matches `docker-compose.dev.yml`:
 
+```env
+APP_NAME=DemoEcommerce
+APP_ENV=local
+APP_KEY=
+APP_DEBUG=true
+APP_URL=http://localhost:8080
+
+DB_CONNECTION=pgsql
+DB_HOST=db
+DB_PORT=5432
+DB_DATABASE=demoecommerce
+DB_USERNAME=demo
+DB_PASSWORD=secret
+
+SESSION_DRIVER=file
+CACHE_STORE=file
+QUEUE_CONNECTION=sync
+
+SANCTUM_STATEFUL_DOMAINS=localhost:5173
+SESSION_DOMAIN=localhost
+```
+
+The frontend needs no separate `.env` — its variables (`VITE_API_URL`, `VITE_SERVER_BASE_URL`) are injected directly by `docker-compose.dev.yml`.
+
+### 2. Start the stack
 ```bash
 docker compose -f docker-compose.dev.yml up --build
 ```
+This builds and starts Postgres, the Laravel backend, Nginx (API gateway), and the Vite dev server.
 
-Esto levanta automáticamente:
+> **Note:** as shipped, the `backend` service's bind mount masks the `vendor/` directory installed during the image build, which breaks `php artisan` commands run via `docker compose exec`. The same issue existed for the frontend's `node_modules` and was fixed by adding an anonymous volume. See [Known Issues](#known-issues) for the fix needed on the backend service.
 
-- Backend Laravel
-- Frontend React mediante Vite
-- Base de datos PostgreSQL
-- Nginx para la API
-
-URLs principales:
-
-```text
-Frontend: http://localhost:5173
-Backend:  http://localhost:8080
-API:      http://localhost:8080/api/v1
+### 3. Generate the app key
+```bash
+docker compose -f docker-compose.dev.yml exec backend php artisan key:generate
 ```
 
-En desarrollo, React utiliza el servidor de desarrollo de Vite, permitiendo recompilación y actualización automática durante los cambios de código.
+### 4. Run migrations and seed the database
+```bash
+docker compose -f docker-compose.dev.yml exec backend php artisan migrate --seed
+```
+Seeds categories, products, and an admin user (`AdminUserSeeder`).
 
----
+### 5. Verify
+- Frontend: http://localhost:5173
+- API: http://localhost:8080/api/v1/products
 
-## 🏗️ Build tipo producción
-
-El proyecto también dispone de una configuración Docker orientada a un entorno de producción.
+## Production-style Build
 
 ```bash
+docker compose -f docker-compose.dev.yml down
 docker compose -f docker-compose.prod.yml up --build
 ```
+In this mode, the frontend is compiled to static files via `npm run build` (Vite output in `dist/`) and served through Nginx, rather than running the Vite dev server.
 
-En este entorno, el frontend deja de ejecutarse mediante el servidor de desarrollo de Vite.
+```
+dev:   React source → Vite dev server        → Browser
+prod:  React source → Vite build → dist/     → Nginx → Browser
+```
 
-React se compila mediante:
+## Testing
 
+**Backend:** PHPUnit is configured (`phpunit.xml`), but `tests/Feature/ExampleTest.php` and `tests/Unit/ExampleTest.php` are Laravel's default scaffold tests — real backend test coverage is not yet written. Once the Docker `vendor/` mount issue above is fixed, run with:
 ```bash
-npm run build
+docker compose -f docker-compose.dev.yml exec backend php artisan test
 ```
 
-Vite genera los archivos estáticos dentro de:
-
-```text
-dist/
-```
-
-Estos archivos son posteriormente servidos mediante Nginx.
-
-Flujo en desarrollo:
-
-```text
-React source
-    ↓
-Vite dev server
-    ↓
-Browser
-```
-
-Flujo tipo producción:
-
-```text
-React source
-    ↓
-Vite build
-    ↓
-dist/
-    ↓
-Nginx
-    ↓
-Browser
-```
-
-Las variables `VITE_*` utilizadas por el frontend se resuelven durante el proceso de build.
-
----
-
-## 🔗 Endpoints disponibles actualmente (Backend API)
-
-La API está versionada bajo:
-
-```text
-/api/v1
-```
-
-### Endpoints públicos
-
-| Endpoint | Método | Descripción |
-|---|---|---|
-| `/api/v1/categories` | GET | Listado de categorías |
-| `/api/v1/categories/{id}/products` | GET | Productos de una categoría específica |
-| `/api/v1/products` | GET | Lista de productos |
-| `/api/v1/products/{id}` | GET | Producto por ID |
-| `/api/v1/products/slug/{slug}` | GET | Producto por slug |
-| `/api/v1/auth/login` | POST | Autenticación de usuario |
-
-### Endpoints autenticados
-
-| Endpoint | Método | Descripción |
-|---|---|---|
-| `/api/v1/orders` | POST | Crea una orden de compra |
-
-> El endpoint de órdenes requiere autenticación mediante Laravel Sanctum y Bearer Token.
-
----
-
-## 🔐 Autenticación
-
-El backend utiliza Laravel Sanctum para autenticar usuarios mediante tokens.
-
-Flujo simplificado:
-
-```text
-Usuario
-  ↓
-POST /api/v1/auth/login
-  ↓
-Laravel valida credenciales
-  ↓
-Sanctum genera token
-  ↓
-Frontend almacena token
-  ↓
-apiClient agrega Authorization
-  ↓
-Endpoint protegido
-```
-
-Las peticiones autenticadas utilizan:
-
-```http
-Authorization: Bearer <token>
-```
-
-El backend es responsable de validar que el token exista y sea válido antes de permitir el acceso a endpoints protegidos.
-
----
-
-## 🖥️ Frontend
-
-### Estado actual
-
-✔ Catálogo funcional  
-✔ Productos por categoría  
-✔ Carrito persistido en `localStorage`  
-✔ Login funcional  
-✔ Autenticación con Bearer Token  
-✔ Checkout autenticado  
-✔ Creación de órdenes  
-✔ Cliente REST centralizado  
-✔ Configuración de entorno centralizada  
-✔ TypeScript en modo estricto  
-⏳ Detalle de producto pendiente  
-⏳ Registro de usuarios pendiente  
-
----
-
-## 🌐 Configuración del frontend
-
-La configuración relacionada con URLs y variables de entorno se centraliza en:
-
-```text
-frontend/src/shared/config/env.ts
-```
-
-Variables principales:
-
-```env
-VITE_API_URL=http://localhost:8080/api/v1
-VITE_SERVER_BASE_URL=http://localhost:8080
-```
-
-`VITE_API_URL` se utiliza como URL base para las peticiones REST.
-
-Ejemplo:
-
-```text
-http://localhost:8080/api/v1/products
-```
-
-`VITE_SERVER_BASE_URL` se utiliza para recursos servidos directamente por el backend, por ejemplo imágenes.
-
-Ejemplo:
-
-```text
-http://localhost:8080/storage/products/example.jpg
-```
-
----
-
-## 🔌 Cliente REST centralizado
-
-Las peticiones HTTP se encuentran centralizadas mediante:
-
-```text
-frontend/src/shared/api/apiClient.ts
-```
-
-El cliente compartido se encarga de:
-
-- Base URL de la API
-- Headers comunes
-- `Content-Type`
-- Bearer Token
-- Ejecución de `fetch`
-- Conversión de respuestas JSON
-- Manejo común de errores HTTP
-
-Los módulos específicos del dominio consumen este cliente.
-
-Ejemplo:
-
-```text
-CategoryProductsPage
-        ↓
-products.ts
-        ↓
-apiClient.ts
-        ↓
-Laravel API
-```
-
-Esto evita realizar llamadas `fetch()` directamente desde las páginas y componentes.
-
-Los módulos REST actuales incluyen:
-
-```text
-frontend/src/api/
-│── auth.ts
-│── categories.ts
-│── products.ts
-│── orders.ts
-```
-
-Cada módulo conoce sus propios endpoints, mientras que `apiClient.ts` se encarga de la infraestructura HTTP común.
-
----
-
-## 🧩 Modelos y transformación de datos
-
-Los tipos reutilizados en distintas partes del frontend se centralizan para evitar interfaces duplicadas.
-
-Por ejemplo:
-
-```text
-frontend/src/models/Product.ts
-```
-
-La API puede devolver determinados valores utilizando tipos diferentes a los utilizados internamente por React.
-
-Por ejemplo, el backend puede devolver:
-
-```json
-{
-  "price": "19.99"
-}
-```
-
-mientras que el frontend trabaja internamente con:
-
-```ts
-price: number;
-```
-
-La capa API realiza la transformación antes de entregar los datos a la página.
-
-```text
-Laravel API
-price: "19.99"
-      ↓
-products.ts
-Number(price)
-      ↓
-Product
-price: 19.99
-      ↓
-React Page
-```
-
-De esta forma, las páginas reciben los datos ya preparados para su uso.
-
----
-
-## 🟦 TypeScript
-
-El frontend utiliza TypeScript con validación estricta.
-
-La configuración incluye:
-
-```json
-"strict": true
-```
-
-Además de reglas como:
-
-```text
-noUnusedLocals
-noUnusedParameters
-noFallthroughCasesInSwitch
-```
-
-Para realizar la validación de tipos:
-
+**QA Automation (E2E):** A working Selenium + Cucumber + Serenity BDD suite exists in `qa-automation/`, covering the full purchase flow (home → browse → add to cart → checkout → confirm). To run it:
 ```bash
-npm run typecheck
+cd qa-automation
+./gradlew test        # or gradlew.bat test on Windows
 ```
+Requires JDK 17+ (`JAVA_HOME` set) and the app stack running via Docker Compose first, since it drives a real browser against the live local app. Check `build.gradle` to confirm the exact Serenity report output path (typically `target/site/serenity/index.html` or `build/reports/`) — see [Known Issues](#known-issues).
 
-Este script ejecuta:
+## CI/CD
 
-```bash
-tsc --noEmit
-```
+Not yet implemented. Planned: GitHub Actions running backend tests, the QA suite, and a build check on every PR — see [Roadmap](#roadmap).
 
-`--noEmit` indica a TypeScript que debe analizar y validar el código sin generar archivos JavaScript.
+## Key Decisions and Tradeoffs
 
-Esto permite ejecutar la validación de tipos independientemente del build de Vite.
+- **DDD/hexagonal backend structure over plain Laravel MVC** — chosen deliberately as a learning goal and to demonstrate separation of business logic from framework code, at the cost of more files/boilerplate than a project this size strictly needs.
+- **Selenium + Cucumber + Serenity (Java) for QA**, rather than a JS-based E2E tool that would match the rest of the stack — chosen to demonstrate BDD-style test automation and Java tooling specifically as a QA skill, independent of the app's own language choices.
+- **Cart persisted in `localStorage`** rather than the database — simpler for a demo project where cart state doesn't need to survive across devices or sessions server-side.
+- **Product detail page and public user registration deprioritized** — checkout and the core purchase flow were treated as the critical path; these were consciously scoped out for now rather than left unplanned.
 
-Para compilar el frontend:
+## Known Issues
 
-```bash
-npm run build
-```
+- **Backend `vendor/` masked by Docker bind mount:** `docker compose exec backend php artisan ...` currently fails with a missing `autoload.php` error, because the bind mount `./backend:/var/www` hides the `vendor/` directory installed at image build time. Fix: add `- /var/www/vendor` as an anonymous volume under the `backend` service in `docker-compose.dev.yml` (same pattern already applied to `frontend`'s `node_modules`). Identified but not yet applied/committed as of this writing.
+- **No `.env.example` committed** — required variables are documented above in [Local Setup](#local-setup) instead.
+- **QA suite run command not fully end-to-end verified against this repo** — `./gradlew test` is the expected Serenity/Cucumber convention, but hasn't been confirmed to run without error including the exact report output path.
+- **No live deployment yet.**
+- **User registration:** backend command/handler code exists (`RegisterUserCommand`, `RegisterHandler`, `RegisterRequest`), but it's unconfirmed whether a route in `routes/api.php` currently exposes it.
 
-Por lo tanto, existen dos validaciones independientes:
+## Roadmap
 
-```text
-npm run typecheck
-        ↓
-TypeScript validation
+**Backend:** user registration route, backend unit/feature test coverage, expanded validation.
+**Frontend:** product detail page, global error handling, runtime validation of API responses.
+**QA:** API-level testing, expanded E2E coverage, performance testing.
+**DevOps:** fix Docker `vendor/` mount, add `.env.example`, GitHub Actions CI/CD, quality gates, production deployment.
 
-npm run build
-        ↓
-Vite production build
-```
+## Screenshots
 
----
-
-## 🤖 QA Automation
-
-Tecnologías utilizadas:
-
-✔ Selenium WebDriver  
-✔ Cucumber  
-✔ Serenity BDD  
-✔ Java  
-
-El módulo se encuentra en:
-
-```text
-qa-automation/
-```
-
-### Caso automatizado principal
-
-1. Abrir home
-2. Listar productos
-3. Agregar uno o varios productos al carrito
-4. Ver carrito
-5. Realizar checkout
-6. Validar confirmación de compra
-
-Próximas implementaciones:
-
-- API testing
-- Ampliación de cobertura E2E
-- Performance testing
-- Integración CI/CD
-
----
-
-## 🧪 Estrategia de calidad
-
-El proyecto busca incorporar progresivamente distintas capas de validación.
-
-```text
-Código
-  ↓
-Type checking
-  ↓
-Tests unitarios
-  ↓
-API tests
-  ↓
-Functional tests
-  ↓
-E2E tests
-  ↓
-Performance tests
-  ↓
-CI/CD
-```
-
-El objetivo es integrar estas validaciones posteriormente dentro de GitHub Actions.
-
----
-
-## 📍 Roadmap técnico
-
-### Backend
-
-- [x] API REST
-- [x] Versionado `/api/v1`
-- [x] Login
-- [x] Laravel Sanctum
-- [x] Endpoint protegido de órdenes
-- [ ] Registro de usuarios
-- [ ] Unit tests
-- [ ] Mejorar cobertura de validaciones
-
-### Frontend
-
-- [x] React + TypeScript
-- [x] Catálogo
-- [x] Productos por categoría
-- [x] Carrito
-- [x] Login
-- [x] Checkout autenticado
-- [x] Cliente REST centralizado
-- [x] Configuración de entorno centralizada
-- [x] Modelos TypeScript compartidos
-- [x] TypeScript strict
-- [x] Script `typecheck`
-- [ ] Vista detalle de producto
-- [ ] Mejorar manejo global de errores
-- [ ] Validación runtime de respuestas API
-
-### QA
-
-- [x] Selenium
-- [x] Cucumber
-- [x] Serenity BDD
-- [ ] API testing
-- [ ] Ampliar cobertura E2E
-- [ ] Performance testing
-
-### DevOps
-
-- [x] Docker Compose para desarrollo
-- [x] Docker Compose tipo producción
-- [x] Build de frontend con Vite + Nginx
-- [ ] CI/CD con GitHub Actions
-- [ ] Quality gates
-- [ ] Deploy productivo
-
----
-
-## 📸 Galería de capturas (en actualización)
-
-### Pantalla principal
-
+### Home
 <img src="docs/screens/home.png" width="700">
 
-### Carrito de compras
-
+### Cart
 <img src="docs/screens/cart.png" width="700">
 
-### Reporte de pruebas automatizadas
-
+### Automated Test Report
 <img src="docs/screens/serenity-report.png" width="700">
 
----
+## About
 
-## 🧑‍💻 Autor
-
-Proyecto creado con fines formativos y de portafolio para fortalecer capacidades en:
-
-- Full-Stack Development
-- Backend Development
-- Frontend Development
-- Diseño de APIs REST
-- React
-- TypeScript
-- Laravel
-- PostgreSQL
-- Docker
-- QA Automation
-- CI/CD
-- Arquitectura monorepo
+Built as a portfolio project to practice and demonstrate full-stack development, REST API design, layered backend architecture, QA automation, and containerized local environments.
